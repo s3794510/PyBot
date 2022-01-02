@@ -1,4 +1,4 @@
-import cv2 as cv
+import cv2
 import keyboard
 import numpy as np
 import os
@@ -14,7 +14,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 wincap = WindowCapture('Leaf Blower Revolution')
 
 # initialize the Vision class
-vision_limestone = Vision('areasxx.jpg')
+area_img = Vision('areasxx.jpg')
 
 loop_time = time()
 while(True):
@@ -23,7 +23,7 @@ while(True):
     screenshot = wincap.get_screenshot()
 
     # display the processed image
-    points = vision_limestone.find(screenshot, 0.5, 'rectangles')
+    points = area_img.find(screenshot, 0.8, 'points', cv2.COLOR_BGR2GRAY)
     #points = vision_gunsnbottle.find(screenshot, 0.7, 'points')
 
     # debug the loop rate
@@ -34,7 +34,7 @@ while(True):
     # waits 1 ms every loop to process key presses
     if keyboard.is_pressed('esc') and keyboard.is_pressed('shift'):
         break
-    if cv.waitKey(1) == ord('q'):
+    if cv2.waitKey(1) == ord('q'):
         break
-cv.destroyAllWindows()
+cv2.destroyAllWindows()
 print('Done.')

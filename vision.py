@@ -14,7 +14,7 @@ class Vision:
     def __init__(self, needle_img_path, method=cv2.TM_CCOEFF_NORMED):
         # load the image we're trying to match
         # https://docs.opencv.org/4.2.0/d4/da8/group__imgcodecs.html
-        self.needle_img = cv.imread(needle_img_path, cv2.IMREAD_UNCHANGED)
+        self.needle_img = cv2.imread(needle_img_path, cv2.IMREAD_UNCHANGED)
         # Save the dimensions of the needle image
         self.needle_w = self.needle_img.shape[1]
         self.needle_h = self.needle_img.shape[0]
@@ -22,16 +22,23 @@ class Vision:
         # TM_CCOEFF, TM_CCOEFF_NORMED, TM_CCORR, TM_CCORR_NORMED, TM_SQDIFF, TM_SQDIFF_NORMED
         self.method = method
 
-
     
-'''
-    def find(self, haystack_img, threshold=0.5, debug_mode=None):
-        # run the OpenCV algorithm
-        result = cv.matchTemplate(haystack_img, self.needle_img, self.method)
+    def find__ (self, haystack_img, debug_mode = None):
+        pass
+    
 
-        # Get the all the positions from the match result that exceed our threshold
+    def find(self, haystack_img, threshold=0.5, debug_mode=None, convert = None):
+        # convert method = COLOR_BGR2GRAY
+
+        if (convert != None):
+            haystack = cv2.cvtColor(haystack_img, convert)
+            needle = cv2.cvtColor(self.needle_img, convert)
+        haystack = haystack_img
+        needle = self.needle_img
+        result = cv2.matchTemplate(haystack, needle, self.method)
         locations = np.where(result >= threshold)
         locations = list(zip(*locations[::-1]))
+        
         #print(locations)
 
         # You'll notice a lot of overlapping rectangles get drawn. We can eliminate those redundant
@@ -48,7 +55,7 @@ class Vision:
         # done. If you put it at 2 then an object needs at least 3 overlapping rectangles to appear
         # in the result. I've set eps to 0.5, which is:
         # "Relative difference between sides of the rectangles to merge them into a group."
-        rectangles, weights = cv.groupRectangles(rectangles, groupThreshold=1, eps=0.5)
+        rectangles, weights = cv2.groupRectangles(rectangles, groupThreshold=1, eps=0.5)
         #print(rectangles)
 
         points = []
@@ -56,9 +63,9 @@ class Vision:
             #print('Found needle.')
 
             line_color = (0, 255, 0)
-            line_type = cv.LINE_4
+            line_type = cv2.LINE_4
             marker_color = (255, 0, 255)
-            marker_type = cv.MARKER_CROSS
+            marker_type = cv2.MARKER_CROSS
 
             # Loop over all the rectangles
             for (x, y, w, h) in rectangles:
@@ -74,18 +81,17 @@ class Vision:
                     top_left = (x, y)
                     bottom_right = (x + w, y + h)
                     # Draw the box
-                    cv.rectangle(haystack_img, top_left, bottom_right, color=line_color, 
+                    cv2.rectangle(haystack_img, top_left, bottom_right, color=line_color, 
                                 lineType=line_type, thickness=2)
                 elif debug_mode == 'points':
                     # Draw the center point
-                    cv.drawMarker(haystack_img, (center_x, center_y), 
+                    cv2.drawMarker(haystack_img, (center_x, center_y), 
                                 color=marker_color, markerType=marker_type, 
                                 markerSize=40, thickness=2)
 
         if debug_mode:
-            cv.imshow('Matches', haystack_img)
+            cv2.imshow('Matches', haystack)
+            cv2.imwrite('cv2screenshot.jpg', haystack)
             #cv.waitKey()
-            #cv.imwrite('result_click_point.jpg', haystack_img)
 
         return points
-'''
