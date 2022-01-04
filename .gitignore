@@ -9,3 +9,4 @@ __pycache__/windowcapture.cpython-38.pyc
 *.pyc
 *.pyc
 temp/*
+*.pyc
