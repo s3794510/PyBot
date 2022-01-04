@@ -10,6 +10,4 @@ __pycache__/windowcapture.cpython-38.pyc
 *.pyc
 temp/*
 *.pyc
-__pycache__/windowcapture.cpython-38.pyc
-__pycache__/bothandler.cpython-38.pyc
-__pycache__/vision.cpython-38.pyc
+__pycache__/*
