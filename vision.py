@@ -41,10 +41,11 @@ class Vision:
         
         #print(locations)
         if debug_mode:
-            cv2.namedWindow('Matches', cv2.WINDOW_NORMAL)
-            h,w = haystack.shape[:2]
-            cv2.imshow('Matches', needle)
-            print(w, h)
+            #cv2.namedWindow('Matches', cv2.WINDOW_NORMAL)
+            #h,w = haystack.shape[:2]
+            #cv2.imshow('Matches', needle)
+            #print(w, h)
+
             #cv2.resizeWindow('Matches', w, h)
 
             # You'll notice a lot of overlapping rectangles get drawn. We can eliminate those redundant
@@ -95,8 +96,8 @@ class Vision:
                                     color=marker_color, markerType=marker_type, 
                                     markerSize=40, thickness=2)
             
-            cv2.imshow('Matches', self.needle_img)
-            cv2.imwrite('cv2screenshot.jpg', haystack)
+            cv2.imshow('Matches', haystack)
+            #cv2.imwrite('cv2screenshot.jpg', haystack)
             #cv.waitKey()
 
         return points

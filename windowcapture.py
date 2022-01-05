@@ -33,8 +33,8 @@ class WindowCapture:
         # account for the window border and titlebar and cut them off
         border_pixels = 0
         titlebar_pixels = 0
-        self.w = self.w + (border_pixels * 2)
-        self.h = self.h - titlebar_pixels + border_pixels
+        self.w = self.w - (border_pixels * 2)
+        self.h = self.h - titlebar_pixels - border_pixels
         self.cropped_x = border_pixels
         self.cropped_y = titlebar_pixels
 
@@ -62,13 +62,10 @@ class WindowCapture:
         dataBitMap.Paint(cDC)
 
         # convert the raw data into a format opencv can read
-        dataBitMap.SaveBitmapFile(cDC, 'debug.bmp')
+        # dataBitMap.SaveBitmapFile(cDC, 'debug.bmp')
         signedIntsArray = dataBitMap.GetBitmapBits(True)
         img = np.fromstring(signedIntsArray, dtype='uint8')
-        print(img.shape)
         img.shape = (self.h, self.w, 4)
-        print(img.shape)
-        cv2.imshow('Matches', img)
         
         # free resources
         dcObj.DeleteDC()
