@@ -1,9 +1,12 @@
 from typing import Tuple
 import win32gui
 import win32api, win32con
-import sched
+import sched, winsound
 from time import sleep, time
 import keyboard, cv2
+from vision import Vision
+
+from windowcapture import WindowCapture
 
 class BotHandler:
     # http://www.kbdedit.com/manual/low_level_vk_list.html
@@ -53,17 +56,20 @@ class BotHandler:
     }
    
     hwnd = None
-    def __init__(self, window_name) -> None:
+    def __init__(self, window_name, debug = None) -> None:
+        self.window_name = window_name
         if window_name is None:
             self.hwnd = win32gui.GetDesktopWindow()
         else:
-            self.hwnd = win32gui.FindWindow(None, window_name)
+            self.hwnd = win32gui.FindWindow(None, self.window_name)
             if not self.hwnd:
-                raise Exception('Window not found: {}'.format(window_name))
+                raise Exception('Window not found: {}'.format(self.window_name))
+        
         self.s = sched.scheduler(time, sleep)
         self.WindowHandler = self.WindowHandler(self.hwnd)
         self.is_running = True
         self.is_pause = False
+        self.init()
     
     def keyboard_press(self, key, duration):
         keycode = self.keymap.get(key.upper())
@@ -89,18 +95,16 @@ class BotHandler:
         while True:
             sleep(sleep_time)
             if keyboard.is_pressed('esc') and keyboard.is_pressed('shift'):
-                self.is_running = False
-                return
+                self.exit()
+                break
             if not self.is_pause and keyboard.is_pressed('p') and keyboard.is_pressed('shift'):
-                print("Paused.")
-                self.is_pause = True
+                self.pause()
             elif keyboard.is_pressed('p') and keyboard.is_pressed('shift'):
-                print("Continue")
-                self.is_pause = False
+                self.unpause()
             # press 'q' with the output window focused to exit.
             # waits 1 ms every loop to process key presses
             if cv2.waitKey(1) == ord('q'):
-                self.is_running = False
+                self.exit()
                 break
             if (debug):
                 # debug the loop rate
@@ -108,11 +112,65 @@ class BotHandler:
                     print('FPS {}'.format(1 / (time() - loop_time)))
                     sleep(1)
                 loop_time = time()
-            if (self.is_pause == False):
-                break
-        if self.is_running == False:
-            cv2.destroyAllWindows()
         return loop_time
+
+    def init(self, debug = None):
+        pass
+
+    def run(self, debug = None):
+        self.sound_start()
+        # resize window
+        self.WindowHandler.window_resize(640, 360)
+        # initialize the WindowCapture class
+        wincap = WindowCapture(self.window_name)
+        # initialize the Vision class
+        area_img = Vision('areasxx.jpg')
+        teleport_img = Vision('teleport.jpg')
+        loop_time = time()
+        while(self.is_running):
+            # get an updated image of the game
+            screenshot = wincap.get_screenshot()
+            # bot actions
+            points = area_img.find(screenshot, 0.8, debug, cv2.COLOR_BGR2GRAY)
+            if not (len(points)):
+                self.keyboard_press('v', 0)
+                pass
+            if (len(points)):
+                points = teleport_img.find(screenshot, 0.95, debug, cv2.COLOR_BGR2GRAY)
+                if (len(points)):
+                    x,y = points[0]
+                    self.leftclick(x,y, 0)
+            loop_time = self.flow_handle(0.5 , loop_time, 'regular')
+
+    def pause(self):
+        self.is_pause = True
+        print("Paused.")
+        self.sound_pause()
+
+    def unpause(self):
+        self.is_pause = False
+        print("Continued.")
+        self.sound_unpause()
+        pass
+    def exit(self):
+        self.is_running = False
+        self.sound_exit()
+        cv2.destroyAllWindows()
+        pass
+    def sound_pause(self):
+        winsound.Beep(5000, 200)
+
+    def sound_unpause(self):
+        winsound.Beep(5000, 200)
+
+    def sound_start(self):
+        winsound.Beep(5000, 200)
+        winsound.Beep(5000, 200)
+
+    def sound_exit(self):
+        winsound.Beep(8000, 200)
+        winsound.Beep(8000, 200)
+
 '490, 294'
 '621, 405'
 
