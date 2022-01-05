@@ -10,14 +10,12 @@ class BotHandler:
                 raise Exception('Window not found: {}'.format(window_name))
         self.WindowHandler = self.WindowHandler(self.hwnd)
     
-    def window_resize(self, w, h) -> None:
-            win32gui.MoveWindow(self.hwnd, 0, 0, w, h, True)
 
 
     class WindowHandler:
         def __init__(self, hwnd) -> None:
             self.hwnd = hwnd
         def window_resize(self, w, h) -> None:
-            win32gui.MoveWindow(self.hwnd, 0, 0, w, h, True)
+            win32gui.MoveWindow(self.hwnd, 10, 10, w, h, True)
             
             

@@ -30,9 +30,9 @@ while(True):
 
     # get an updated image of the game
     screenshot = wincap.get_screenshot()
-
+    
     # display the processed image
-    points = area_img.find(screenshot, 0.8, 'points', cv2.COLOR_BGR2GRAY)
+    #points = area_img.find(screenshot, 0.8, 'points', cv2.COLOR_BGR2GRAY)
     #points = vision_gunsnbottle.find(screenshot, 0.7, 'points')
 
     # debug the loop rate
