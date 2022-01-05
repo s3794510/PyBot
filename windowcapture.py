@@ -54,11 +54,11 @@ class WindowCapture:
         cDC=dcObj.CreateCompatibleDC()
 
         dataBitMap = win32ui.CreateBitmap()
-        dataBitMap.CreateCompatibleBitmap(dcObj, w, h)
+        dataBitMap.CreateCompatibleBitmap(dcObj, self.w, self.h)
 
         cDC.SelectObject(dataBitMap)
 
-        cDC.BitBlt((0,0),(w, h) , dcObj, (0,0), win32con.SRCCOPY)
+        cDC.BitBlt((0,0),(self.w, self.h) , dcObj, (0,0), win32con.SRCCOPY)
         dataBitMap.Paint(cDC)
 
         # convert the raw data into a format opencv can read
