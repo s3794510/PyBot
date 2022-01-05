@@ -3,7 +3,7 @@ import win32gui
 import win32api, win32con
 import sched
 from time import sleep, time
-import struct
+import keyboard, cv2
 
 class BotHandler:
     # http://www.kbdedit.com/manual/low_level_vk_list.html
@@ -62,6 +62,8 @@ class BotHandler:
                 raise Exception('Window not found: {}'.format(window_name))
         self.s = sched.scheduler(time, sleep)
         self.WindowHandler = self.WindowHandler(self.hwnd)
+        self.is_running = True
+        self.is_pause = False
     
     def keyboard_press(self, key, duration):
         keycode = self.keymap.get(key.upper())
@@ -73,7 +75,7 @@ class BotHandler:
         lParam = win32api.MAKELONG(x, y)
         win32gui.SendMessage(self.hwnd, win32con.WM_MOUSEMOVE, 0, lParam)
         win32gui.SendMessage(self.hwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, lParam)
-        win32gui.SendMessage(self.hwnd, win32con.WM_LBUTTONUP, None, lParam)
+        win32gui.SendMessage(self.hwnd, win32con.WM_LBUTTONUP, win32con.MK_LBUTTON, lParam)
 
     class WindowHandler:
         def __init__(self, hwnd) -> None:
@@ -83,6 +85,34 @@ class BotHandler:
         def get_windowsize(self) -> Tuple:
             return win32gui.GetWindowRect(self.hwnd)
 
+    def flow_handle(self, sleep_time = 0, loop_time = None, debug = None):
+        while True:
+            sleep(sleep_time)
+            if keyboard.is_pressed('esc') and keyboard.is_pressed('shift'):
+                self.is_running = False
+                return
+            if not self.is_pause and keyboard.is_pressed('p') and keyboard.is_pressed('shift'):
+                print("Paused.")
+                self.is_pause = True
+            elif keyboard.is_pressed('p') and keyboard.is_pressed('shift'):
+                print("Continue")
+                self.is_pause = False
+            # press 'q' with the output window focused to exit.
+            # waits 1 ms every loop to process key presses
+            if cv2.waitKey(1) == ord('q'):
+                self.is_running = False
+                break
+            if (debug):
+                # debug the loop rate
+                if keyboard.is_pressed('f') and keyboard.is_pressed('shift'):
+                    print('FPS {}'.format(1 / (time() - loop_time)))
+                    sleep(1)
+                loop_time = time()
+            if (self.is_pause == False):
+                break
+        if self.is_running == False:
+            cv2.destroyAllWindows()
+        return loop_time
 '490, 294'
 '621, 405'
 
