@@ -11,10 +11,11 @@ class BotHandler:
         self.WindowHandler = self.WindowHandler(self.hwnd)
     
 
+
     class WindowHandler:
         def __init__(self, hwnd) -> None:
             self.hwnd = hwnd
         def window_resize(self, w, h) -> None:
-            win32gui.MoveWindow(self.hwnd, 0, 0, w, h, True)
+            win32gui.MoveWindow(self.hwnd, 10, 10, w, h, True)
             
             
