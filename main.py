@@ -5,16 +5,25 @@ import os
 from time import time
 from windowcapture import WindowCapture
 from vision import Vision
+from bothandler import BotHandler
 
 # Change the working directory to the folder this script is in.
 # Doing this because I'll be putting the files from each video in their own folder on GitHub
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+window_name = 'Leaf Blower Revolution'
+
+# initialize BotHandler class
+bot = BotHandler(window_name)
+# resize window
+bot.WindowHandler.window_resize(640,360)
+
 # initialize the WindowCapture class
-wincap = WindowCapture('Leaf Blower Revolution')
+wincap = WindowCapture(window_name)
 
 # initialize the Vision class
 area_img = Vision('areasxx.jpg')
+
 
 loop_time = time()
 while(True):
