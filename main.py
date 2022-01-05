@@ -22,10 +22,11 @@ wincap = WindowCapture(window_name)
 # initialize the Vision class
 area_img = Vision('areasxx.jpg')
 teleport_img = Vision('teleport.jpg')
-
+debug = ""
 loop_time = time()
-while(True):
-    sleep(2)
+print("""Hold shift + ESC to stop
+Hold shift + P to pause.""")
+while(bot.is_running):
     # get an updated image of the game
     screenshot = wincap.get_screenshot()
 
@@ -39,16 +40,5 @@ while(True):
         if (len(points)):
             x,y = points[0]
             bot.leftclick(x,y, 0)
-
-    # debug the loop rate
-    print('FPS {}'.format(1 / (time() - loop_time)))
-    loop_time = time()
-
-    # press 'q' with the output window focused to exit.
-    # waits 1 ms every loop to process key presses
-    if keyboard.is_pressed('esc') and keyboard.is_pressed('shift'):
-        break
-    if cv2.waitKey(1) == ord('q'):
-        break
-cv2.destroyAllWindows()
+    loop_time = bot.flow_handle(0.5 ,loop_time, 'debug')
 print('Done.')
