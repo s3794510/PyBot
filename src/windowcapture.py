@@ -2,6 +2,7 @@ import numpy as np
 from numpy.testing._private.nosetester import NoseTester
 import win32gui, win32ui, win32con
 import cv2
+
 class WindowCapture:
 
     # properties
@@ -26,8 +27,8 @@ class WindowCapture:
         
         # get the window size
         window_rect = win32gui.GetWindowRect(self.hwnd)
-        self.w = int((window_rect[2] - window_rect[0]) * 1.2234)
-        self.h = int((window_rect[3] - window_rect[1]) * 1.2234)
+        self.w = int((window_rect[2] - window_rect[0]) * 1.25)
+        self.h = int((window_rect[3] - window_rect[1]) * 1.25)
 
         # account for the window border and titlebar and cut them off
         border_pixels = 0
@@ -42,15 +43,16 @@ class WindowCapture:
         self.offset_x = window_rect[0] + self.cropped_x
         self.offset_y = window_rect[1] + self.cropped_y
         
-    def get_screenshot(self, debug = None) -> NoseTester:
+    def get_screenshot(self) -> NoseTester:
         
     
         l,t,r,b=win32gui.GetWindowRect(self.hwnd)
         h=b-t
         w=r-l
-        wDC, paintStruct = win32gui.BeginPaint(self.hwnd)
+        wDC = win32gui.GetWindowDC(self.hwnd)
         dcObj=win32ui.CreateDCFromHandle(wDC)
         cDC=dcObj.CreateCompatibleDC()
+
         dataBitMap = win32ui.CreateBitmap()
         dataBitMap.CreateCompatibleBitmap(dcObj, self.w, self.h)
 
@@ -59,15 +61,12 @@ class WindowCapture:
         cDC.BitBlt((0,0),(self.w, self.h) , dcObj, (0,0), win32con.SRCCOPY)
         dataBitMap.Paint(cDC)
 
-
+        # convert the raw data into a format opencv can read
+        # dataBitMap.SaveBitmapFile(cDC, 'debug.bmp')
         signedIntsArray = dataBitMap.GetBitmapBits(True)
         img = np.fromstring(signedIntsArray, dtype='uint8')
         img.shape = (self.h, self.w, 4)
-        # Debug
-        if (debug):
-            if ('save' in debug):
-                # convert the raw data into a format opencv can read
-                dataBitMap.SaveBitmapFile(cDC, f'debug/debug_screenshot{self.hwnd}.bmp')
+        
         # free resources
         dcObj.DeleteDC()
         cDC.DeleteDC()
@@ -85,9 +84,6 @@ class WindowCapture:
         # see the discussion here:
         # https://github.com/opencv/opencv/issues/14866#issuecomment-580207109
         img = np.ascontiguousarray(img)
-        # Debug
-        if (debug):
-            cv2.imshow('Screenshot Show', img)
         return img
 
     # find the name of the window you're interested in.
