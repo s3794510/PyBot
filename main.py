@@ -12,7 +12,6 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 window_name = 'Leaf Blower Revolution'
 #window_name = 'areasxx.jpg - Paint'
 
-
 # initialize bot
 bot = BotHandler(window_name)
 # resize window
@@ -22,15 +21,20 @@ wincap = WindowCapture(window_name)
 # initialize the Vision class
 area_img = Vision('areasxx.jpg')
 teleport_img = Vision('teleport.jpg')
+
+
+
 debug = ""
-loop_time = time()
 print("""Hold shift + ESC to stop
-Hold shift + P to pause.""")
+Hold shift + P to pause.
+Hold shift + F to show FPS
+Program is running.
+""")
+loop_time = time()
 while(bot.is_running):
     # get an updated image of the game
     screenshot = wincap.get_screenshot()
-
-    # display the processed image
+    # bot actions
     points = area_img.find(screenshot, 0.8, None, cv2.COLOR_BGR2GRAY)
     if not (len(points)):
         bot.keyboard_press('v', 0)
@@ -41,4 +45,5 @@ while(bot.is_running):
             x,y = points[0]
             bot.leftclick(x,y, 0)
     loop_time = bot.flow_handle(0.5 ,loop_time, 'debug')
-print('Done.')
+print('Program is closed.')
+
