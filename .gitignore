@@ -11,3 +11,4 @@ __pycache__/windowcapture.cpython-38.pyc
 temp/*
 *.pyc
 __pycache__/*
+testing.py
