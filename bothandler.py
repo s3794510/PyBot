@@ -1,11 +1,11 @@
 from typing import Tuple
-import win32gui
-import win32api, win32con
-import sched, winsound
-from time import sleep, time
+from winsound import PlaySound
+import winsound
+import win32gui, win32api, win32con
+import sched, threading, multiprocessing, concurrent.futures
+from time import time, sleep
 import keyboard, cv2
 from vision import Vision
-
 from windowcapture import WindowCapture
 
 class BotHandler:
@@ -69,8 +69,9 @@ class BotHandler:
         self.WindowHandler = self.WindowHandler(self.hwnd)
         self.is_running = True
         self.is_pause = False
-        self.init()
-    
+        self.loop_time = time()
+        self.fps = -1
+
     def keyboard_press(self, key, duration):
         keycode = self.keymap.get(key.upper())
         win32api.PostMessage(self.hwnd, win32con.WM_KEYDOWN, keycode, 0)
@@ -91,42 +92,31 @@ class BotHandler:
         def get_windowsize(self) -> Tuple:
             return win32gui.GetWindowRect(self.hwnd)
 
-    def flow_handle(self, sleep_time = 0, loop_time = None, debug = None):
-        while True:
-            sleep(sleep_time)
-            if keyboard.is_pressed('esc') and keyboard.is_pressed('shift'):
-                self.exit()
-                break
-            if not self.is_pause and keyboard.is_pressed('p') and keyboard.is_pressed('shift'):
-                self.pause()
-            elif keyboard.is_pressed('p') and keyboard.is_pressed('shift'):
-                self.unpause()
-            # press 'q' with the output window focused to exit.
-            # waits 1 ms every loop to process key presses
-            if cv2.waitKey(1) == ord('q'):
-                self.exit()
-                break
-            if (debug):
-                # debug the loop rate
-                if keyboard.is_pressed('f') and keyboard.is_pressed('shift'):
-                    print('FPS {}'.format(1 / (time() - loop_time)))
-                    sleep(1)
-                loop_time = time()
-        return loop_time
+    def flow_handle(self, sleep_time = 0, debug = 'regular'):
+        sleep(sleep_time)
+        if (debug):
+            # calcualte times processed each second
+            self.fps = 1 / (time() - self.loop_time)
+            self.loop_time = time()
 
     def init(self, debug = None):
-        pass
-
-    def run(self, debug = None):
         self.sound_start()
+        # init threads
+        self.pause_handle_thread()
+        self.exit_handle_thread()
+        self.show_fps_handle_thread()
+        self.unpause_handle_thread()
         # resize window
         self.WindowHandler.window_resize(640, 360)
+
+    def run(self, debug = None):
+        self.init()
         # initialize the WindowCapture class
         wincap = WindowCapture(self.window_name)
         # initialize the Vision class
         area_img = Vision('areasxx.jpg')
         teleport_img = Vision('teleport.jpg')
-        loop_time = time()
+
         while(self.is_running):
             # get an updated image of the game
             screenshot = wincap.get_screenshot()
@@ -140,7 +130,7 @@ class BotHandler:
                 if (len(points)):
                     x,y = points[0]
                     self.leftclick(x,y, 0)
-            loop_time = self.flow_handle(0.5 , loop_time, 'regular')
+            self.flow_handle(0)
 
     def pause(self):
         self.is_pause = True
@@ -157,19 +147,69 @@ class BotHandler:
         self.sound_exit()
         cv2.destroyAllWindows()
         pass
+
     def sound_pause(self):
-        winsound.Beep(5000, 200)
+        self.play('sound/pause.wav')
 
     def sound_unpause(self):
-        winsound.Beep(5000, 200)
+        self.play('sound/unpause.wav')
 
     def sound_start(self):
-        winsound.Beep(5000, 200)
-        winsound.Beep(5000, 200)
+        self.play('sound/start.wav')
 
     def sound_exit(self):
-        winsound.Beep(8000, 200)
-        winsound.Beep(8000, 200)
+        self.play('sound/exit.wav')
+
+    def play(self, sound_file):
+        thread = threading.Thread(target=winsound.PlaySound, args=(sound_file, winsound.SND_ALIAS))
+        thread.start()
+    
+    def pause_handle_thread(self):
+        thread = threading.Thread(target=self.pause_handle, args=())
+        thread.start()
+
+    def pause_handle(self, sleep_time = 0.5):
+        while self.is_running:
+            sleep(sleep_time)
+            if not self.is_pause and keyboard.is_pressed('p') and keyboard.is_pressed('shift'):
+                sleep(0.5)
+                self.pause()
+
+    def unpause_handle_thread(self):
+        thread = threading.Thread(target=self.unpause_handle, args=())
+        thread.start()
+    def unpause_handle(self, sleep_time = 0.5):
+        while True:
+            sleep(sleep_time)
+            if self.is_pause and keyboard.is_pressed('p') and keyboard.is_pressed('shift'):
+                self.unpause()
+                sleep(0.5)
+
+    def exit_handle_thread(self):
+        thread = threading.Thread(target=self.exit_handle, args= ())
+        thread.start()
+    
+    def exit_handle(self, sleep_time = 0.2):
+        while self.is_running:
+            sleep(sleep_time)
+            if keyboard.is_pressed('esc') and keyboard.is_pressed('shift'):
+                self.exit()
+            # press 'q' with the output window focused to exit.
+            # waits 1 ms every loop to process key presses
+            if cv2.waitKey(1) == ord('q'):
+                self.exit()
+
+    def show_fps_handle_thread(self):
+        thread = threading.Thread(target=self.show_fps_handle, args= ()) 
+        thread.start()
+
+    def show_fps_handle(self, sleep_time = 0.25):
+        while self.is_running:
+            sleep(sleep_time)
+            if keyboard.is_pressed('f') and keyboard.is_pressed('shift'):
+                sleep(sleep_time)
+                print(f"FPS: {self.fps}")
+                print("Threads: ", threading.active_count())
 
 '490, 294'
 '621, 405'
