@@ -1,5 +1,3 @@
-import os,winsound
-from time import sleep, time
 from bothandler import BotHandler
 
 #os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -16,4 +14,4 @@ Program is running.
 bot.run()
 print('Program is closed.')
 i = input("Press any key to end program.\n")
-
+exit()
