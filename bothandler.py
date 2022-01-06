@@ -1,8 +1,7 @@
 from typing import Tuple
-from winsound import PlaySound
 import winsound
 import win32gui, win32api, win32con
-import sched, threading, multiprocessing, concurrent.futures
+import sched, threading
 from time import time, sleep
 import keyboard, cv2
 from vision import Vision
@@ -105,7 +104,6 @@ class BotHandler:
         self.pause_handle_thread()
         self.exit_handle_thread()
         self.show_fps_handle_thread()
-        self.unpause_handle_thread()
         # resize window
         self.WindowHandler.window_resize(640, 360)
 
@@ -134,12 +132,12 @@ class BotHandler:
 
     def pause(self):
         self.is_pause = True
-        print("Paused.")
+        print("Paused.\n")
         self.sound_pause()
 
     def unpause(self):
         self.is_pause = False
-        print("Continued.")
+        print("Continued.\n")
         self.sound_unpause()
         pass
     def exit(self):
@@ -168,28 +166,22 @@ class BotHandler:
         thread = threading.Thread(target=self.pause_handle, args=())
         thread.start()
 
-    def pause_handle(self, sleep_time = 0.5):
+    def pause_handle(self, sleep_time = 0.1):
         while self.is_running:
             sleep(sleep_time)
-            if not self.is_pause and keyboard.is_pressed('p') and keyboard.is_pressed('shift'):
-                sleep(0.5)
-                self.pause()
-
-    def unpause_handle_thread(self):
-        thread = threading.Thread(target=self.unpause_handle, args=())
-        thread.start()
-    def unpause_handle(self, sleep_time = 0.5):
-        while True:
-            sleep(sleep_time)
-            if self.is_pause and keyboard.is_pressed('p') and keyboard.is_pressed('shift'):
-                self.unpause()
-                sleep(0.5)
+            if threading.active_count() < 7:
+                if not self.is_pause and keyboard.is_pressed('p') and keyboard.is_pressed('shift'):
+                    self.pause()
+            if threading.active_count() < 7:
+                if self.is_pause and keyboard.is_pressed('p') and keyboard.is_pressed('shift'):
+                    self.unpause()
+                
 
     def exit_handle_thread(self):
         thread = threading.Thread(target=self.exit_handle, args= ())
         thread.start()
     
-    def exit_handle(self, sleep_time = 0.2):
+    def exit_handle(self, sleep_time = 0.1):
         while self.is_running:
             sleep(sleep_time)
             if keyboard.is_pressed('esc') and keyboard.is_pressed('shift'):
@@ -203,13 +195,13 @@ class BotHandler:
         thread = threading.Thread(target=self.show_fps_handle, args= ()) 
         thread.start()
 
-    def show_fps_handle(self, sleep_time = 0.25):
+    def show_fps_handle(self, sleep_time = 0.1):
         while self.is_running:
             sleep(sleep_time)
             if keyboard.is_pressed('f') and keyboard.is_pressed('shift'):
-                sleep(sleep_time)
                 print(f"FPS: {self.fps}")
                 print("Threads: ", threading.active_count())
+                sleep(1)
 
 '490, 294'
 '621, 405'
