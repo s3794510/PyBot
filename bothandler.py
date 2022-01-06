@@ -98,33 +98,36 @@ class BotHandler:
             self.fps = 1 / (time() - self.loop_time)
             self.loop_time = time()
 
+
     def init(self, debug = None):
         self.sound_start()
         # init threads
         self.pause_handle_thread()
         self.exit_handle_thread()
         self.show_fps_handle_thread()
+
         # resize window
         self.WindowHandler.window_resize(640, 360)
 
+        # initialize the WindowCapture class
+        self.wincap = WindowCapture(self.window_name)
+        # initialize the Vision class
+        self.area_img = Vision('areasxx.jpg')
+        self.teleport_img = Vision('teleport.jpg')
+
+
     def run(self, debug = None):
         self.init()
-        # initialize the WindowCapture class
-        wincap = WindowCapture(self.window_name)
-        # initialize the Vision class
-        area_img = Vision('areasxx.jpg')
-        teleport_img = Vision('teleport.jpg')
-
         while(self.is_running):
             # get an updated image of the game
-            screenshot = wincap.get_screenshot()
+            screenshot = self.wincap.get_screenshot()
             # bot actions
-            points = area_img.find(screenshot, 0.8, debug, cv2.COLOR_BGR2GRAY)
+            points = self.area_img.find(screenshot, 0.8, debug, cv2.COLOR_BGR2GRAY)
             if not (len(points)):
                 self.keyboard_press('v', 0)
                 pass
             if (len(points)):
-                points = teleport_img.find(screenshot, 0.95, debug, cv2.COLOR_BGR2GRAY)
+                points = self.teleport_img.find(screenshot, 0.95, debug, cv2.COLOR_BGR2GRAY)
                 if (len(points)):
                     x,y = points[0]
                     self.leftclick(x,y, 0)
