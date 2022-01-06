@@ -1,4 +1,4 @@
-from bothandler import BotHandler
+import pybot
 
 #os.chdir(os.path.dirname(os.path.abspath(__file__)))
 window_name = 'Leaf Blower Revolution'
