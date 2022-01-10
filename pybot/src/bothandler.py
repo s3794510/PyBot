@@ -2,8 +2,8 @@ from typing import Tuple
 import winsound, win32gui, win32api, win32con, sched, threading
 from time import time, sleep
 import keyboard, cv2
-from vision import Vision
-from windowcapture import WindowCapture
+from .vision import Vision
+from .windowhandler import WindowHandler
 
 class BotHandler:
     # http://www.kbdedit.com/manual/low_level_vk_list.html
@@ -52,22 +52,26 @@ class BotHandler:
     'Z':    0x5A 
     }
    
-    hwnd = None
+    
     def __init__(self, window_name, debug = None) -> None:
         self.window_name = window_name
-        if window_name is None:
+        self.hwnd = None
+        if self.window_name is None:
             self.hwnd = win32gui.GetDesktopWindow()
         else:
             self.hwnd = win32gui.FindWindow(None, self.window_name)
             if not self.hwnd:
                 raise Exception('Window not found: {}'.format(self.window_name))
-        
+        WindowHandler.window_resize(self.window_name,640,380)
         self.s = sched.scheduler(time, sleep)
-        self.WindowHandler = self.WindowHandler(self.hwnd)
+        self.window_handler = WindowHandler(self.window_name)
         self.is_running = True
         self.is_pause = False
         self.loop_time = time()
         self.fps = -1
+        self.screenshot = None
+        self.debug = debug
+        
 
     def keyboard_press(self, key, duration):
         keycode = self.keymap.get(key.upper())
@@ -81,16 +85,13 @@ class BotHandler:
         win32gui.SendMessage(self.hwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, lParam)
         win32gui.SendMessage(self.hwnd, win32con.WM_LBUTTONUP, win32con.MK_LBUTTON, lParam)
 
-    class WindowHandler:
-        def __init__(self, hwnd) -> None:
-            self.hwnd = hwnd
-        def window_resize(self, w, h) -> None:
-            win32gui.MoveWindow(self.hwnd, 0, 0, w, h, True)
-        def get_windowsize(self) -> Tuple:
-            return win32gui.GetWindowRect(self.hwnd)
 
     def flow_handle(self, sleep_time = 0, debug = 'regular'):
         sleep(sleep_time)
+        # press 'q' with the output window focused to exit.
+        # waits 1 ms every loop to process key presses
+        if cv2.waitKey(1) == ord('q'):
+            self.exit()
         if (debug):
             # calcualte times processed each second
             self.fps = 1 / (time() - self.loop_time)
@@ -104,33 +105,18 @@ class BotHandler:
         self.exit_handle_thread()
         self.show_fps_handle_thread()
 
-        # resize window
-        self.WindowHandler.window_resize(640, 360)
-
-        # initialize the WindowCapture class
-        self.wincap = WindowCapture(self.window_name)
         # initialize the Vision class
-        self.area_img = Vision('areasxx.jpg')
-        self.teleport_img = Vision('teleport.jpg')
+        #self.area_img = Vision('areasxx.jpg')
+        #self.teleport_img = Vision('teleport.jpg')
 
 
     def run(self, debug = None):
         self.init()
         while(self.is_running):
             # get an updated image of the game
-            screenshot = self.wincap.get_screenshot()
-            # bot actions
-            points = self.area_img.find(screenshot, 0.8, debug, cv2.COLOR_BGR2GRAY)
-            if not (len(points)):
-                self.keyboard_press('v', 0)
-                pass
-            if (len(points)):
-                points = self.teleport_img.find(screenshot, 0.95, debug, cv2.COLOR_BGR2GRAY)
-                if (len(points)):
-                    x,y = points[0]
-                    self.leftclick(x,y, 0)
+            self.update_screenshot(debug)
+            #self.actions()
             self.flow_handle(0)
-
     def pause(self):
         self.is_pause = True
         print("Paused.\n")
@@ -148,16 +134,16 @@ class BotHandler:
         pass
 
     def sound_pause(self):
-        self.play('sound/pause.wav')
+        self.play('../../sound/pause.wav')
 
     def sound_unpause(self):
-        self.play('sound/unpause.wav')
+        self.play('../../sound/unpause.wav')
 
     def sound_start(self):
-        self.play('sound/start.wav')
+        self.play('../../sound/start.wav')
 
     def sound_exit(self):
-        self.play('sound/exit.wav')
+        self.play('../../sound/exit.wav')
 
     def play(self, sound_file):
         thread = threading.Thread(target=winsound.PlaySound, args=(sound_file, winsound.SND_ALIAS))
@@ -187,10 +173,7 @@ class BotHandler:
             sleep(sleep_time)
             if keyboard.is_pressed('esc') and keyboard.is_pressed('shift'):
                 self.exit()
-            # press 'q' with the output window focused to exit.
-            # waits 1 ms every loop to process key presses
-            if cv2.waitKey(1) == ord('q'):
-                self.exit()
+
 
     def show_fps_handle_thread(self):
         thread = threading.Thread(target=self.show_fps_handle, args= ()) 
@@ -203,6 +186,27 @@ class BotHandler:
                 print(f"FPS: {self.fps}")
                 print("Threads: ", threading.active_count())
                 sleep(1)
+
+    def update_screenshot(self, debug = None):
+        self.screenshot = self.window_handler.get_screenshot(debug)
+
+    def show_screenshot(self):
+        self.update_screenshot()
+        cv2.imshow("Screenshot", self.screenshot)
+        cv2.waitwKey()
+
+    def actions(self):
+        # bot actions
+        points = self.area_img.find(self.screenshot, 0.8, self.debug, cv2.COLOR_BGR2GRAY)
+        if not (len(points)):
+            self.keyboard_press('v', 0)
+            pass
+        if (len(points)):
+            points = self.teleport_img.find(self.screenshot, 0.95, self.debug, cv2.COLOR_BGR2GRAY)
+            if (len(points)):
+                x,y = points[0]
+                self.leftclick(x,y, 0)
+        
 
 '490, 294'
 '621, 405'

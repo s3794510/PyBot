@@ -1,8 +1,9 @@
+from typing import Tuple
 import numpy as np
 from numpy.testing._private.nosetester import NoseTester
 import win32gui, win32ui, win32con
 import cv2
-class WindowCapture:
+class WindowHandler:
 
     # properties
     w = 0
@@ -17,12 +18,7 @@ class WindowCapture:
     def __init__(self, window_name=None):
         # find the handle for the window we want to capture.
         # if no window name is given, capture the entire screen
-        if window_name is None:
-            self.hwnd = win32gui.GetDesktopWindow()
-        else:
-            self.hwnd = win32gui.FindWindow(None, window_name)
-            if not self.hwnd:
-                raise Exception('Window not found: {}'.format(window_name))
+        self.hwnd = self.get_winhandler(window_name)
         
         # get the window size
         window_rect = win32gui.GetWindowRect(self.hwnd)
@@ -43,8 +39,6 @@ class WindowCapture:
         self.offset_y = window_rect[1] + self.cropped_y
         
     def get_screenshot(self, debug = None) -> NoseTester:
-        
-    
         l,t,r,b=win32gui.GetWindowRect(self.hwnd)
         h=b-t
         w=r-l
@@ -107,3 +101,24 @@ class WindowCapture:
     # the __init__ constructor.
     def get_screen_position(self, pos):
         return (pos[0] + self.offset_x, pos[1] + self.offset_y)
+    @staticmethod
+    def window_resize(window_name, w, h) -> None:
+        if window_name is None:
+            hwnd = win32gui.GetDesktopWindow()
+        else:
+            hwnd = win32gui.FindWindow(None, window_name)
+            if not hwnd:
+                raise Exception('Window not found: {}'.format(window_name))
+        win32gui.MoveWindow(hwnd, 0, 0, w, h, True)
+    @staticmethod
+    def get_windowsize(self) -> Tuple:
+        return win32gui.GetWindowRect(self.hwnd)
+
+    def get_winhandler(self, window_name):
+        if window_name is None:
+            hwnd = win32gui.GetDesktopWindow()
+        else:
+            hwnd = win32gui.FindWindow(None, window_name)
+            if not hwnd:
+                raise Exception('Window not found: {}'.format(window_name))
+        return hwnd
