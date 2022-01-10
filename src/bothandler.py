@@ -1,7 +1,5 @@
 from typing import Tuple
-import winsound
-import win32gui, win32api, win32con
-import sched, threading
+import winsound, win32gui, win32api, win32con, sched, threading
 from time import time, sleep
 import keyboard, cv2
 from vision import Vision

@@ -1,0 +1,41 @@
+LICENSE
+MANIFEST.in
+README.md
+__init__.py
+pyBot.py
+pybot.py
+setup.cfg
+setup.py
+__pycache__/BotController.cpython-38.pyc
+__pycache__/__init__.cpython-38.pyc
+__pycache__/bothandler.cpython-38.pyc
+__pycache__/hsvfilter.cpython-38.pyc
+__pycache__/vision.cpython-38.pyc
+__pycache__/windowcapture.cpython-38.pyc
+pybot.egg-info/PKG-INFO
+pybot.egg-info/SOURCES.txt
+pybot.egg-info/dependency_links.txt
+pybot.egg-info/requires.txt
+pybot.egg-info/top_level.txt
+src/__init__.py
+src/bothandler.py
+src/vision.py
+src/windowcapture.py
+temp/debug_screenshot2362690.bmp
+temp/main.py
+temp/mousemacro.py
+temp/testing.py
+temp/PyBot/BotController.py
+temp/PyBot/__pycache__/BotController.cpython-38.pyc
+temp/PyBot/__pycache__/vision.cpython-38.pyc
+temp/PyBot/__pycache__/windowcapture.cpython-38.pyc
+temp/old files 07.01.2022/areasxx.jpg
+temp/old files 07.01.2022/areasxx.png
+temp/old files 07.01.2022/bothandler.py
+temp/old files 07.01.2022/cv2screenshot.jpg
+temp/old files 07.01.2022/debug.bmp
+temp/old files 07.01.2022/testing.py
+temp/old files 07.01.2022/vision.py
+temp/old files 07.01.2022/windowcapture.py
+testing/__init__.py
+testing/testing.py

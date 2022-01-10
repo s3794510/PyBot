@@ -1,0 +1,6 @@
+pywin32>=227
+numpy>=1.19
+opencv-contrib-python>=4.5
+keyboard>=0.13
+
+[dev]

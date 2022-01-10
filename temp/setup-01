@@ -1,0 +1,17 @@
+[options]
+py_modules = pybot
+package_dir = =src
+
+[metadata]
+keywords =
+    python
+    opencv
+    mouse
+    keyboard
+    automation
+name = pybot
+description = This package contains functions for doing automation tasks
+author = Cedrus Maize
+author_email = walter.tungo@gmail.com
+url = https://github.com/s3794510/PyBot
+license_files = LICENSE
