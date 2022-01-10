@@ -1,3 +1,0 @@
-pyBot
-src
-testing
