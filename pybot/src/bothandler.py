@@ -1,20 +1,16 @@
 from typing import Tuple
-import winsound, win32gui, win32api, win32con, sched, threading
+import  win32gui, win32api, win32con, sched, threading
 from time import time, sleep
-from playsound import playsound
 import keyboard, cv2
 from .vision import Vision
 from .windowhandler import WindowHandler
 from pygame import mixer
 class BotHandler:
     # http://www.kbdedit.com/manual/low_level_vk_list.html
-    VK_KEY_U =	0x55
-    VK_KEY_V =	0x56
-    VK_KEY_3 = 0x33
     keymap = {
-    '0':	0x30,
-    '1':	0x31,
-    '2':	0x32,
+    '0': 0x30,
+    '1': 0x31,
+    '2': 0x32,
     '3': 0x33,
     '''
     VK_KEY_4	0x34 ('4')	4
@@ -45,12 +41,12 @@ class BotHandler:
     VK_KEY_T	0x54 ('T')	T
     VK_KEY_U	0x55 ('U')	U
     ''':0,
-    'U':	0x57,
-    'V':	0x56,
-    'W':	0x57,
-    'X':    0x58,
-    'Y':    0x59,
-    'Z':    0x5A 
+    'U': 0x57,
+    'V': 0x56,
+    'W': 0x57,
+    'X': 0x58,
+    'Y': 0x59,
+    'Z': 0x5A 
     }
    
     
