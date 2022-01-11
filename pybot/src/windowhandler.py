@@ -1,9 +1,9 @@
+from typing import Tuple
 import numpy as np
 from numpy.testing._private.nosetester import NoseTester
 import win32gui, win32ui, win32con
 import cv2
-
-class WindowCapture:
+class WindowHandler:
 
     # properties
     w = 0
@@ -18,23 +18,19 @@ class WindowCapture:
     def __init__(self, window_name=None):
         # find the handle for the window we want to capture.
         # if no window name is given, capture the entire screen
-        if window_name is None:
-            self.hwnd = win32gui.GetDesktopWindow()
-        else:
-            self.hwnd = win32gui.FindWindow(None, window_name)
-            if not self.hwnd:
-                raise Exception('Window not found: {}'.format(window_name))
+        self.window_name = window_name
+        self.hwnd = self.get_winhandler(self.window_name)
         
         # get the window size
         window_rect = win32gui.GetWindowRect(self.hwnd)
-        self.w = int((window_rect[2] - window_rect[0]) * 1.25)
-        self.h = int((window_rect[3] - window_rect[1]) * 1.25)
+        self.w = int((window_rect[2] - window_rect[0]) * 1.2234)
+        self.h = int((window_rect[3] - window_rect[1]) * 1.2234)
 
         # account for the window border and titlebar and cut them off
         border_pixels = 0
         titlebar_pixels = 0
-        self.w = self.w + (border_pixels * 2)
-        self.h = self.h - titlebar_pixels + border_pixels
+        self.w = self.w - (border_pixels * 2)
+        self.h = self.h - titlebar_pixels - border_pixels
         self.cropped_x = border_pixels
         self.cropped_y = titlebar_pixels
 
@@ -43,33 +39,27 @@ class WindowCapture:
         self.offset_x = window_rect[0] + self.cropped_x
         self.offset_y = window_rect[1] + self.cropped_y
         
-    def get_screenshot(self) -> NoseTester:
-        
-    
-        l,t,r,b=win32gui.GetWindowRect(self.hwnd)
-        h=b-t
-        w=r-l
-        wDC = win32gui.GetWindowDC(self.hwnd)
+    def get_screenshot(self, debug = None) -> NoseTester:
+        wDC, paintStruct = win32gui.BeginPaint(self.hwnd)
         dcObj=win32ui.CreateDCFromHandle(wDC)
         cDC=dcObj.CreateCompatibleDC()
-
         dataBitMap = win32ui.CreateBitmap()
-        dataBitMap.CreateCompatibleBitmap(dcObj, w, h)
+        dataBitMap.CreateCompatibleBitmap(dcObj, self.w, self.h)
 
         cDC.SelectObject(dataBitMap)
 
-        cDC.BitBlt((0,0),(w, h) , dcObj, (0,0), win32con.SRCCOPY)
+        cDC.BitBlt((0,0),(self.w, self.h) , dcObj, (0,0), win32con.SRCCOPY)
         dataBitMap.Paint(cDC)
 
-        # convert the raw data into a format opencv can read
-        dataBitMap.SaveBitmapFile(cDC, 'debug.bmp')
+
         signedIntsArray = dataBitMap.GetBitmapBits(True)
         img = np.fromstring(signedIntsArray, dtype='uint8')
-        print(img.shape)
         img.shape = (self.h, self.w, 4)
-        print(img.shape)
-        cv2.imshow('Matches', img)
-        
+        # Debug
+        if (debug):
+            if ('save' in debug):
+                # convert the raw data into a format opencv can read
+                dataBitMap.SaveBitmapFile(cDC, f'debug/debug_screenshot{self.hwnd}.bmp')
         # free resources
         dcObj.DeleteDC()
         cDC.DeleteDC()
@@ -87,6 +77,9 @@ class WindowCapture:
         # see the discussion here:
         # https://github.com/opencv/opencv/issues/14866#issuecomment-580207109
         img = np.ascontiguousarray(img)
+        # Debug
+        if (debug):
+            cv2.imshow('Screenshot Show', img)
         return img
 
     # find the name of the window you're interested in.
@@ -106,3 +99,31 @@ class WindowCapture:
     # the __init__ constructor.
     def get_screen_position(self, pos):
         return (pos[0] + self.offset_x, pos[1] + self.offset_y)
+    @staticmethod
+    def window_resize(window_name, w, h) -> None:
+        if window_name is None:
+            hwnd = win32gui.GetDesktopWindow()
+        else:
+            hwnd = win32gui.FindWindow(None, window_name)
+            if not hwnd:
+                raise Exception('Window not found: {}'.format(window_name))
+        win32gui.MoveWindow(hwnd, 0, 0, w, h, True)
+    @staticmethod
+    def get_windowsize(self) -> Tuple:
+        return win32gui.GetWindowRect(self.hwnd)
+
+    def get_winhandler(self, window_name):
+        if window_name is None:
+            hwnd = win32gui.GetDesktopWindow()
+        else:
+            hwnd = win32gui.FindWindow(None, window_name)
+            if not hwnd:
+                raise Exception('Window not found: {}'.format(window_name))
+        return hwnd
+    
+    def window_resize(self, w, h) -> None:
+        hwnd = win32gui.FindWindow(None, self.window_name)
+        if not hwnd:
+            raise Exception('Window not found: {}'.format(self.window_name))
+        win32gui.MoveWindow(hwnd, 0, 0, w, h, True)
+        self.__init__(self.window_name)

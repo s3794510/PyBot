@@ -28,7 +28,7 @@ class Vision:
         pass
     
 
-    def find(self, haystack_img, threshold=0.5, debug_mode=None, convert = None):
+    def find(self, haystack_img, threshold=0.5, convert = None,  debug_mode=None):
         haystack = None
         # convert method = COLOR_BGR2GRAY
         if (convert != None):

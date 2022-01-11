@@ -1,4 +1,4 @@
-# PyBot: Automation Program
+# PyBot: Program Automation Python Library
 Using Python
 Currently under development
 
