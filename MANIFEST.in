@@ -1,8 +1,5 @@
-include *.py
-recursive-include __pycache__ *.pyc
-recursive-include src_py *.py
-recursive-include temp *.bmp
-recursive-include temp *.jpg
-recursive-include temp *.png
-recursive-include temp *.py
-recursive-include temp *.pyc
+include *.in
+recursive-include examples *.py
+recursive-include pybot *.py
+recursive-include sound *.mp3
+recursive-include testing *
