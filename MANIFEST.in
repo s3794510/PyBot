@@ -2,4 +2,3 @@ include *.in
 recursive-include examples *.py
 recursive-include pybot *.py
 recursive-include sound *.mp3
-recursive-include testing *
