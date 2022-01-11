@@ -3,3 +3,5 @@ pybot.py
 pybot.egg-info/*
 src/__pycache__/*
 __pycache__/*
+build/*
+dist/*
