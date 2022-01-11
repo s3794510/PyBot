@@ -1,6 +1,6 @@
 import cv2
 from playsound import playsound
-import pybot
+from pybot import PyBot
 from pygame import mixer
 import time
 def main():
@@ -19,7 +19,7 @@ Program is running.
 
     # Input an existing wav filename
 
-    bot = pybot.PyBot(window_name, debug)
+    bot = PyBot(window_name, debug)
     bot.resize(640,380)
     bot.run()
     print('Program is closed.')
