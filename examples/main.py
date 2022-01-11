@@ -20,6 +20,7 @@ Program is running.
     # Input an existing wav filename
 
     bot = pybot.PyBot(window_name, debug)
+    bot.resize(640,380)
     bot.run()
     print('Program is closed.')
     i = input("Press any key to end program.\n")

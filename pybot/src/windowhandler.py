@@ -18,7 +18,8 @@ class WindowHandler:
     def __init__(self, window_name=None):
         # find the handle for the window we want to capture.
         # if no window name is given, capture the entire screen
-        self.hwnd = self.get_winhandler(window_name)
+        self.window_name = window_name
+        self.hwnd = self.get_winhandler(self.window_name)
         
         # get the window size
         window_rect = win32gui.GetWindowRect(self.hwnd)
@@ -39,9 +40,6 @@ class WindowHandler:
         self.offset_y = window_rect[1] + self.cropped_y
         
     def get_screenshot(self, debug = None) -> NoseTester:
-        l,t,r,b=win32gui.GetWindowRect(self.hwnd)
-        h=b-t
-        w=r-l
         wDC, paintStruct = win32gui.BeginPaint(self.hwnd)
         dcObj=win32ui.CreateDCFromHandle(wDC)
         cDC=dcObj.CreateCompatibleDC()
@@ -122,3 +120,10 @@ class WindowHandler:
             if not hwnd:
                 raise Exception('Window not found: {}'.format(window_name))
         return hwnd
+    
+    def window_resize(self, w, h) -> None:
+        hwnd = win32gui.FindWindow(None, self.window_name)
+        if not hwnd:
+            raise Exception('Window not found: {}'.format(self.window_name))
+        win32gui.MoveWindow(hwnd, 0, 0, w, h, True)
+        self.__init__(self.window_name)

@@ -1,7 +1,7 @@
 from typing import Tuple
 import  win32gui, win32api, win32con, sched, threading
 from time import time, sleep
-import keyboard, cv2
+import keyboard, cv2, os
 from .vision import Vision
 from .windowhandler import WindowHandler
 from pygame import mixer
@@ -59,7 +59,6 @@ class BotHandler:
             self.hwnd = win32gui.FindWindow(None, self.window_name)
             if not self.hwnd:
                 raise Exception('Window not found: {}'.format(self.window_name))
-        WindowHandler.window_resize(self.window_name,640,380)
         self.s = sched.scheduler(time, sleep)
         self.window_handler = WindowHandler(self.window_name)
         self.is_running = True
@@ -68,7 +67,14 @@ class BotHandler:
         self.fps = -1
         self.screenshot = None
         self.debug = debug
-        
+        self.images = {str:Vision}
+        self.soundpath = os.path.join(os.path.dirname(__file__),os.pardir,os.pardir,'sound')
+    
+    def add_image(self, name, path):
+        self.images.update({name:Vision(path)})
+
+    def find_image(self, name, threshold):
+        self.images.get(name).find(self.screenshot, threshold)
 
     def keyboard_press(self, key, duration):
         keycode = self.keymap.get(key.upper())
@@ -80,6 +86,7 @@ class BotHandler:
         lParam = win32api.MAKELONG(x, y)
         win32gui.SendMessage(self.hwnd, win32con.WM_MOUSEMOVE, 0, lParam)
         win32gui.SendMessage(self.hwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, lParam)
+        sleep(duration)
         win32gui.SendMessage(self.hwnd, win32con.WM_LBUTTONUP, win32con.MK_LBUTTON, lParam)
 
 
@@ -106,6 +113,8 @@ class BotHandler:
         #self.area_img = Vision('areasxx.jpg')
         #self.teleport_img = Vision('teleport.jpg')
 
+    def resize(self, x, y):
+        self.window_handler.window_resize(x, y)
 
     def run(self, debug = None):
         self.init()
@@ -134,16 +143,16 @@ class BotHandler:
         pass
 
     def sound_pause(self):
-        self.play('sound/pause.mp3')
+        self.play(self.soundpath +'/pause.mp3')
 
     def sound_unpause(self):
-        self.play('sound/unpause.mp3')
+        self.play(self.soundpath +'/unpause.mp3')
 
     def sound_start(self):
-        self.play('sound/start.mp3')
+        self.play(self.soundpath +'/start.mp3')
 
     def sound_exit(self):
-        self.play('sound/exit.mp3')
+        self.play(self.soundpath +'/exit.mp3')
 
     def play(self, sound_file):
             thread = threading.Thread(target=self.launch_mp3, args=(sound_file,))
