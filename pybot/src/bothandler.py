@@ -1,10 +1,11 @@
 from typing import Tuple
 import winsound, win32gui, win32api, win32con, sched, threading
 from time import time, sleep
+from playsound import playsound
 import keyboard, cv2
 from .vision import Vision
 from .windowhandler import WindowHandler
-
+from pygame import mixer
 class BotHandler:
     # http://www.kbdedit.com/manual/low_level_vk_list.html
     VK_KEY_U =	0x55
@@ -114,9 +115,13 @@ class BotHandler:
         self.init()
         while(self.is_running):
             # get an updated image of the game
-            self.update_screenshot(debug)
+            self.update_screenshot()
+            #debug
+            if(self.debug):
+                self.show_screenshot()
             #self.actions()
             self.flow_handle(0)
+        cv2.destroyAllWindows()
     def pause(self):
         self.is_pause = True
         print("Paused.\n")
@@ -130,45 +135,61 @@ class BotHandler:
     def exit(self):
         self.is_running = False
         self.sound_exit()
-        cv2.destroyAllWindows()
         pass
 
     def sound_pause(self):
-        self.play('../../sound/pause.wav')
+        self.play('sound/pause.mp3')
 
     def sound_unpause(self):
-        self.play('../../sound/unpause.wav')
+        self.play('sound/unpause.mp3')
 
     def sound_start(self):
-        self.play('../../sound/start.wav')
+        self.play('sound/start.mp3')
 
     def sound_exit(self):
-        self.play('../../sound/exit.wav')
+        self.play('sound/exit.mp3')
 
     def play(self, sound_file):
-        thread = threading.Thread(target=winsound.PlaySound, args=(sound_file, winsound.SND_ALIAS))
-        thread.start()
+            thread = threading.Thread(target=self.launch_mp3, args=(sound_file,))
+            thread.start()
+
+    def launch_mp3(self, sound_file):
+            mixer.init()
+            mixer.music.load(sound_file)
+            mixer.music.play()
+            while mixer.music.get_busy():  # wait for music to finish playing
+                sleep(1)
     
     def pause_handle_thread(self):
         thread = threading.Thread(target=self.pause_handle, args=())
         thread.start()
 
-    def pause_handle(self, sleep_time = 0.1):
+
+    def pause_handle(self, sleep_time = 0.05):
+        done = True
         while self.is_running:
             sleep(sleep_time)
-            if threading.active_count() < 7:
+            if done:
                 if not self.is_pause and keyboard.is_pressed('p') and keyboard.is_pressed('shift'):
+                    done = False
                     self.pause()
-            if threading.active_count() < 7:
-                if self.is_pause and keyboard.is_pressed('p') and keyboard.is_pressed('shift'):
+                    sleep(0.5)
+                    done = True
+                    
+            if done:
+                if self.is_pause and keyboard.is_pressed('p') and keyboard.is_pressed('shift'):   
+                    done = False   
                     self.unpause()
+                    sleep(0.5)
+                    done = True
+                    
                 
 
     def exit_handle_thread(self):
         thread = threading.Thread(target=self.exit_handle, args= ())
         thread.start()
     
-    def exit_handle(self, sleep_time = 0.1):
+    def exit_handle(self, sleep_time = 0.05):
         while self.is_running:
             sleep(sleep_time)
             if keyboard.is_pressed('esc') and keyboard.is_pressed('shift'):
@@ -191,9 +212,7 @@ class BotHandler:
         self.screenshot = self.window_handler.get_screenshot(debug)
 
     def show_screenshot(self):
-        self.update_screenshot()
         cv2.imshow("Screenshot", self.screenshot)
-        cv2.waitwKey()
 
     def actions(self):
         # bot actions
@@ -208,6 +227,23 @@ class BotHandler:
                 self.leftclick(x,y, 0)
         
 
+class PropagatingThread(threading.Thread):
+    def run(self):
+        self.exc = None
+        try:
+            if hasattr(self, '_Thread__target'):
+                # Thread uses name mangling prior to Python 3.
+                self.ret = self._Thread__target(*self._Thread__args, **self._Thread__kwargs)
+            else:
+                self.ret = self._target(*self._args, **self._kwargs)
+        except BaseException as e:
+            self.exc = e
+
+    def join(self, timeout=None):
+        super(PropagatingThread, self).join(timeout)
+        if self.exc:
+            raise self.exc
+        return self.ret
 '490, 294'
 '621, 405'
 
