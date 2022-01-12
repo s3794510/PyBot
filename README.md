@@ -1,4 +1,4 @@
-# pybot: Program Automation Python Library
+# Pybotter: Program Automation Python Library
 Using Python
 Currently under development
 
@@ -6,7 +6,7 @@ Currently under development
 Run the following command to install:
 
 ```python
-pip install pybot
+pip install pybotter
 ```
 
 ## Usage
