@@ -18,8 +18,8 @@ class PyBot:
         self.bothandler.show_screenshot()
 
 
-    def run(self, debug = None):
-        self.bothandler.run(debug)
+    def run(self, actions, *args, **kwargs):
+        self.bothandler.run(actions, *args, **kwargs)
 
 
     def left_click(self, x, y, duration):

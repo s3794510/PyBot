@@ -61,8 +61,8 @@ class BotHandler:
                 raise Exception('Window not found: {}'.format(self.window_name))
         self.s = sched.scheduler(time, sleep)
         self.window_handler = WindowHandler(self.window_name)
-        self.is_running = True
-        self.is_pause = False
+        self._active = True
+        self._paused = False
         self.loop_time = time()
         self.fps = -1
         self.screenshot = None
@@ -72,9 +72,13 @@ class BotHandler:
     
     def add_image(self, name, path):
         self.images.update({name:Vision(path)})
+        print(f"{name} needle image added\n")
 
     def find_image(self, name, threshold):
-        self.images.get(name).find(self.screenshot, threshold)
+        image = self.images.get(name)
+        if image == None: 
+            raise (f"Image {name} not registered")
+        image.find(self.screenshot, threshold)
 
     def keyboard_press(self, key, duration):
         keycode = self.keymap.get(key.upper())
@@ -103,6 +107,11 @@ class BotHandler:
 
 
     def init(self, debug = None):
+        print("""Hold shift + ESC to stop
+Hold shift + P to pause/unpause.
+Hold shift + F to show FPS
+Program is running.
+        """)
         self.sound_start()
         # init threads
         self.pause_handle_thread()
@@ -116,29 +125,32 @@ class BotHandler:
     def resize(self, x, y):
         self.window_handler.window_resize(x, y)
 
-    def run(self, debug = None):
+    def run(self, actions, *args, **kwargs):
         self.init()
-        while(self.is_running):
+        # program loop
+        while(self._active):
             # get an updated image of the game
             self.update_screenshot()
             #debug
             if(self.debug):
                 self.show_screenshot()
-            #self.actions()
+            actions(*args, **kwargs)
             self.flow_handle(0)
         cv2.destroyAllWindows()
+        print('Program is closed.')
+        i = input("Press any key to end program.\n")
     def pause(self):
-        self.is_pause = True
+        self._paused = True
         print("Paused.\n")
         self.sound_pause()
 
     def unpause(self):
-        self.is_pause = False
+        self._paused = False
         print("Continued.\n")
         self.sound_unpause()
         pass
     def exit(self):
-        self.is_running = False
+        self._active = False
         self.sound_exit()
         pass
 
@@ -172,17 +184,17 @@ class BotHandler:
 
     def pause_handle(self, sleep_time = 0.05):
         done = True
-        while self.is_running:
+        while self._active:
             sleep(sleep_time)
             if done:
-                if not self.is_pause and keyboard.is_pressed('p') and keyboard.is_pressed('shift'):
+                if not self._paused and keyboard.is_pressed('p') and keyboard.is_pressed('shift'):
                     done = False
                     self.pause()
                     sleep(0.5)
                     done = True
                     
             if done:
-                if self.is_pause and keyboard.is_pressed('p') and keyboard.is_pressed('shift'):   
+                if self._paused and keyboard.is_pressed('p') and keyboard.is_pressed('shift'):   
                     done = False   
                     self.unpause()
                     sleep(0.5)
@@ -195,7 +207,7 @@ class BotHandler:
         thread.start()
     
     def exit_handle(self, sleep_time = 0.05):
-        while self.is_running:
+        while self._active:
             sleep(sleep_time)
             if keyboard.is_pressed('esc') and keyboard.is_pressed('shift'):
                 self.exit()
@@ -206,7 +218,7 @@ class BotHandler:
         thread.start()
 
     def show_fps_handle(self, sleep_time = 0.1):
-        while self.is_running:
+        while self._active:
             sleep(sleep_time)
             if keyboard.is_pressed('f') and keyboard.is_pressed('shift'):
                 print(f"FPS: {self.fps}")
