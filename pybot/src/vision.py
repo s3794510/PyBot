@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-
+import os
 
 class Vision:
 
@@ -15,6 +15,7 @@ class Vision:
         # load the image we're trying to match
         # https://docs.opencv.org/4.2.0/d4/da8/group__imgcodecs.html
         self.needle_img_path = needle_img_path
+        if not (os.path.isfile(self.needle_img_path)): raise ('File at {self.needle_img_path} does not exist.')
         self.needle_img = cv2.imread(self.needle_img_path, cv2.IMREAD_UNCHANGED)
         # Save the dimensions of the needle image
         self.needle_w = self.needle_img.shape[1]
