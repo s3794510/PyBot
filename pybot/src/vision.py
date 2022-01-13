@@ -1,3 +1,4 @@
+from typing import List
 import cv2
 import numpy as np
 import os
@@ -29,15 +30,12 @@ class Vision:
         pass
     
 
-    def find(self, haystack_img, threshold=0.5, convert = None,  debug_mode=None):
+    def find(self, haystack_img, threshold=0.5, convert = None,  debug_mode='') -> List:
+        """convert methods = [None, cv2.COLOR_BGR2GRAY] \n
+        debug_mode = [None, 'points', 'rectangles', 'show']"""
         haystack = None
-        # convert method = COLOR_BGR2GRAY
-        if (convert != None):
-            haystack = cv2.cvtColor(haystack_img, convert)
-            needle = cv2.cvtColor(self.needle_img, convert)
-        else:
-            haystack = haystack_img
-            needle = self.needle_img
+        haystack = cv2.cvtColor(haystack_img, convert)
+        needle = cv2.cvtColor(self.needle_img, convert)
         result = cv2.matchTemplate(haystack, needle, self.method)
         locations = np.where(result >= threshold)
         locations = list(zip(*locations[::-1]))
@@ -94,16 +92,20 @@ class Vision:
                         # Draw the box
                         cv2.rectangle(haystack, top_left, bottom_right, color=line_color, 
                                     lineType=line_type, thickness=2)
+                        cv2.rectangle(haystack_img, top_left, bottom_right, color=line_color, 
+                                    lineType=line_type, thickness=2)
                     elif 'points' in debug_mode:
                         # Draw the center point
                         cv2.drawMarker(haystack, (center_x, center_y), 
                                     color=marker_color, markerType=marker_type, 
                                     markerSize=20, thickness=2)
-        if debug_mode:
+                        cv2.drawMarker(haystack_img, (center_x, center_y), 
+                                    color=marker_color, markerType=marker_type, 
+                                    markerSize=20, thickness=2)
+        if 'show' in debug_mode:
             cv2.imshow('Matches', haystack)
             if "save" in debug_mode:
                 cv2.imwrite(f'debug/vision.find_screenshot{self.needle_img_path}', haystack)
-        #cv2.waitKey()
         for i in range(len(points)):
             points[i] = (int(points[i][0] / 1.2234), int(points[i][1] / 1.2234))
         return points

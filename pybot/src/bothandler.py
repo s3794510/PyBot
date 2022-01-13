@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import List, Tuple
 import  win32gui, win32api, win32con, sched, threading
 from time import time, sleep
 import keyboard, cv2, os
@@ -8,6 +8,7 @@ from pygame import mixer
 class BotHandler:
     # http://www.kbdedit.com/manual/low_level_vk_list.html
     keymap = {
+    'space':win32con.VK_SPACE ,
     '0': 0x30,
     '1': 0x31,
     '2': 0x32,
@@ -72,22 +73,25 @@ class BotHandler:
     
     def add_image(self, name, path):
         self.images.update({name:Vision(path)})
-        print(f"{name} needle image added\n")
+        print(f"NEEDLE IMAGE: {name} needle image added\n")
 
-    def find_image(self, name, threshold):
-        image = self.images.get(name)
-        if image == None: 
-            raise (f"Image {name} not registered")
-        image.find(self.screenshot, threshold)
+    def find_image(self, name, threshold = 0.5, convert = None,  debug_mode = None) -> List:
+        """convert methods = [None, cv2.COLOR_BGR2GRAY] \n
+        debug_mode = [None, 'points', 'rectangles', 'show']"""
+        if image:= self.images.get(name):           
+            return image.find(self.screenshot, threshold, convert,  debug_mode)
+        self.exit(True)
+        raise LookupError(f"Image '{name}' not registered")
 
     def keyboard_press(self, key, duration):
-        keycode = self.keymap.get(key.upper())
+        #keycode = self.keymap.get(key.upper())
+        keycode = (ord(key.upper()))
         win32api.PostMessage(self.hwnd, win32con.WM_KEYDOWN, keycode, 0)
-        sleep(duration + 0.1)
+        sleep(duration)
         win32api.PostMessage(self.hwnd, win32con.WM_KEYUP, keycode, 0)
 
-    def leftclick(self, x, y, duration):
-        lParam = win32api.MAKELONG(x, y)
+    def leftclick(self, location, duration):
+        lParam = win32api.MAKELONG(location[0],location[1])
         win32gui.SendMessage(self.hwnd, win32con.WM_MOUSEMOVE, 0, lParam)
         win32gui.SendMessage(self.hwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, lParam)
         sleep(duration)
@@ -98,7 +102,7 @@ class BotHandler:
         sleep(sleep_time)
         # press 'q' with the output window focused to exit.
         # waits 1 ms every loop to process key presses
-        if cv2.waitKey(1) == ord('q'):
+        if cv2.waitKey(1)  != -1:
             self.exit()
         if (debug):
             # calcualte times processed each second
@@ -112,6 +116,7 @@ Hold shift + P to pause/unpause.
 Hold shift + F to show FPS
 Program is running.
         """)
+        if self.debug: print ("Press any key on the capture console to exit.")
         self.sound_start()
         # init threads
         self.pause_handle_thread()
@@ -125,10 +130,12 @@ Program is running.
     def resize(self, x, y):
         self.window_handler.window_resize(x, y)
 
-    def run(self, actions, *args, **kwargs):
+    def run(self, begin_wait, loop_wait, actions, *args, **kwargs):
+        sleep(begin_wait)
         self.init()
         # program loop
         while(self._active):
+            sleep(loop_wait)
             # get an updated image of the game
             self.update_screenshot()
             #debug
@@ -149,8 +156,9 @@ Program is running.
         print("Continued.\n")
         self.sound_unpause()
         pass
-    def exit(self):
+    def exit(self, without_sound = False):
         self._active = False
+        if without_sound: return
         self.sound_exit()
         pass
 
@@ -165,6 +173,9 @@ Program is running.
 
     def sound_exit(self):
         self.play(self.soundpath +'/exit.mp3')
+
+    def sound_error(self):
+        self.play(self.soundpath +'/error.mp3')
 
     def play(self, sound_file):
             thread = threading.Thread(target=self.launch_mp3, args=(sound_file,))
