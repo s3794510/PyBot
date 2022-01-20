@@ -14,6 +14,7 @@ def main():
     needle_confirm = os.path.join(needleimg_dir, 'confirm.jpg')
 
     ### initialize bot
+    ## Set debug variable (optional)
     debug = ''
     debug_find_image = 'rectangles show'
     ## Input an existing wav filename
@@ -59,7 +60,7 @@ def main():
 
     # Run bot with the defined set of actions
     bot.run(0, 0, mlc_auto_crunch)
-    
+
 def testing():
 
     pass
