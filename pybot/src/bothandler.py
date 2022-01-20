@@ -107,10 +107,6 @@ class BotHandler:
             # calcualte times processed each second
             self.fps = 1 / (time() - self.loop_time)
             self.loop_time = time()
-        # pause the program
-        while self._paused:
-            sleep(0.1)
-            pass
 
 
     def init(self, debug = None):
@@ -139,13 +135,16 @@ Program is running.
         # program loop
         while(self._active):
             sleep(loop_wait)
+            if self._paused:
+                continue
             # get an updated image of the game
             self.update_screenshot()
-            #debug
+            # debug
             if(self.debug):
                 self.show_screenshot()
             actions(*args, **kwargs)
             self.flow_handle(0)
+        # exit
         cv2.destroyAllWindows()
         print('Program is closed.')
         i = input("Press any key to end program.\n")
