@@ -3,7 +3,7 @@ from playsound import playsound
 from pybot import PyBot
 import time, os
 def main():
-    
+    ### Needle image paths
     needleimg_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),'needle_images')
     window_name = 'Leaf Blower Revolution'
     needle_mlcbutton = os.path.join(needleimg_dir, 'mlcbutton.jpg')
@@ -12,24 +12,24 @@ def main():
     needle_megaleafcrunch = os.path.join(needleimg_dir, 'megaleafcrunch.jpg')
     needle_megacrunch = os.path.join(needleimg_dir, 'megacrunch.jpg')
     needle_confirm = os.path.join(needleimg_dir, 'confirm.jpg')
-    # initialize bot
-    #bot = bothandler.BotHandler(window_name)
+
+    ### initialize bot
     debug = ''
     debug_find_image = 'rectangles show'
-    # Input an existing wav filename
-    bot = PyBot(window_name, debug)
+    ## Input an existing wav filename
+    bot = PyBot(window_name, debug = debug)
 
-    # Add images to find
-
+    ## Add images to find
     # mlc_auto_crunch
     bot.add_image(needle_mlcbutton, needle_mlcbutton)
     bot.add_image (needle_megaleafcrunch, needle_megaleafcrunch)
     bot.add_image (needle_megacrunch, needle_megacrunch)
     bot.add_image (needle_confirm,needle_confirm)
     # craft_leaves
-    #bot.add_image ('craftbar', needle_craftbar)
-    #bot.add_image ('craftingxxx', needle_crafingxxx)
-
+    ''' 
+    bot.add_image ('craftbar', needle_craftbar)
+    bot.add_image ('craftingxxx', needle_crafingxxx)
+    '''
 
     # Bot actions
     def actions(text = 'ABC'):
