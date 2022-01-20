@@ -3,7 +3,7 @@ from cv2 import resize, threshold
 from .src.bothandler import BotHandler
 
 class PyBot:
-    def __init__(self, window_name, debug = None) -> None:
+    def __init__(self, window_name, debug = None, **kwargs) -> None:
         self.debug = debug
         self.window_name = window_name
         self.bothandler = BotHandler(window_name, self.debug)
