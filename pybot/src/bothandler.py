@@ -100,14 +100,17 @@ class BotHandler:
 
     def flow_handle(self, sleep_time = 0, debug = 'regular'):
         sleep(sleep_time)
-        # press 'q' with the output window focused to exit.
-        # waits 1 ms every loop to process key presses
+        # waits 1 ms every loop to process key presses, if any key is press in debug screen, exit the program
         if cv2.waitKey(1)  != -1:
             self.exit()
         if (debug):
             # calcualte times processed each second
             self.fps = 1 / (time() - self.loop_time)
             self.loop_time = time()
+        # pause the program
+        while self._paused:
+            sleep(0.1)
+            pass
 
 
     def init(self, debug = None):
