@@ -51,7 +51,7 @@ def main():
             if points:=bot.find_image(needle_confirm, 0.7, cv2.COLOR_BGR2GRAY, ''):
                 bot.left_click(points[0],0.1)
                 pass
-            elif points:=bot.find_image(needle_mlcbutton,0.9, None, debug_find_image):
+            elif points:=bot.find_image(needle_mlcbutton,0.92, None, debug_find_image):
                 bot.left_click(points[0],0.1)
                 pass
     # bot resize window
@@ -59,7 +59,7 @@ def main():
 
     # Run bot with the defined set of actions
     bot.run(0, 0, mlc_auto_crunch)
-
+    
 def testing():
 
     pass
