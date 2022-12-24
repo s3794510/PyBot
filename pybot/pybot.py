@@ -1,5 +1,6 @@
 from cv2 import resize, threshold
-from .src.bothandler import BotHandler
+from .bothandler import BotHandler
+import win32gui
 
 class PyBot:
     def __init__(self, window_name, debug = None) -> None:
@@ -7,6 +8,13 @@ class PyBot:
         self.window_name = window_name
         self.bothandler = BotHandler(window_name, self.debug)
         print("Object PyBot created")
+
+    def list_windows():
+        def winEnumHandler( hwnd, ctx ):
+            if win32gui.IsWindowVisible( hwnd ):
+                print ( hex( hwnd ), win32gui.GetWindowText( hwnd ) )
+        win32gui.EnumWindows( winEnumHandler, None )
+
 
     def add_image(self, name, path):
         self.bothandler.add_image(name, path)
