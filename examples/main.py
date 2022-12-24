@@ -1,8 +1,5 @@
-import cv2
-from playsound import playsound
 from pybot import PyBot
-from pygame import mixer
-import time
+
 def main():
     #os.chdir(os.path.dirname(os.path.abspath(__file__)))
     window_name = 'Leaf Blower Revolution'
