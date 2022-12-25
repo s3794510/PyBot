@@ -1,4 +1,6 @@
 include *.in
-recursive-include examples *.py
+include LICENSE
+include README.md
+recursive-include pybot/template *.py
 recursive-include pybot *.py
 recursive-include sound *.mp3
