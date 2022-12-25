@@ -11,6 +11,8 @@ pip install pybotter
 
 ## Usage
 
+A template provided in the package for simplification.
+
 ```python
 from pybot import PyBot
 
