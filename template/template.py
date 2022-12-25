@@ -32,9 +32,6 @@ Program is running.
     bot.run()
     
 
-    # Exit program text
-    print('Program is closed.')
-    i = input("Press any key to end program.\n")
 
 
 # Driver code
