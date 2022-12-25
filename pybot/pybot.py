@@ -3,7 +3,7 @@ from .bothandler import BotHandler
 import win32gui
 
 class PyBot:
-    def __init__(self, window_name, debug = None) -> None:
+    def __init__(self, window_name, debug = None):
         self.debug = debug
         self.window_name = window_name
         self.bothandler = BotHandler(window_name, self.debug)
@@ -14,6 +14,7 @@ class PyBot:
             if win32gui.IsWindowVisible( hwnd ):
                 print ( hex( hwnd ), win32gui.GetWindowText( hwnd ) )
         win32gui.EnumWindows( winEnumHandler, None )
+        return 0
 
 
     def add_image(self, name, path):
@@ -27,7 +28,21 @@ class PyBot:
 
 
     def run(self, debug = None):
+
+        # Start program text
+        print("""Hold shift + ESC to stop
+        Hold shift + P to pause/unpause.
+        Hold shift + F to show FPS
+        Program is running.
+        """)
+
+        # Run the bot
         self.bothandler.run(debug)
+
+        # After done running
+        print('Program is closed.')
+        i = input("Press any key to end program.\n")
+        return 0
 
 
     def left_click(self, x, y, duration):
