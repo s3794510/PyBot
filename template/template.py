@@ -4,13 +4,6 @@ from pybot import PyBot
 
 def main():
 
-    # Start program text
-    print("""Hold shift + ESC to stop
-Hold shift + P to pause/unpause.
-Hold shift + F to show FPS
-Program is running.
-    """)
-
     # Change path of the system
     #os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
