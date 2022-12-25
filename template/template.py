@@ -8,7 +8,10 @@ def main():
     #os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
     # (**) Type the exact name of the window
-    window_name = "The name of the target window"
+    window_name = "Title of the target window"
+
+    # Show list of windows
+    #PyBot.list_windows()
 
     # Debug mode: show screen shot of the target window
     debug = None
