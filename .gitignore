@@ -7,3 +7,4 @@ dist/*
 pybotter.egg-info/*
 *.pyc
 simplerun.py
+trash
