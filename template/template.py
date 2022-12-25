@@ -23,8 +23,9 @@ def main():
     # Resize the target window
     #bot.resize(640,380)
 
-    # (**) Run the bot
     # (**) To modify the bot actions, modify the function __actions__ in BotHandler class
+
+    # (**) Run the bot
     bot.run()
     
 
