@@ -68,7 +68,7 @@ class BotHandler:
         self.screenshot = None
         self.debug = debug
         self.images = {str:Vision}
-        self.soundpath = os.path.join(os.path.dirname(__file__),os.pardir,os.pardir,'sound')
+        self.soundpath = os.path.join(os.path.dirname(__file__),os.pardir,'sound')
     
     def add_image(self, name, path):
         self.images.update({name:Vision(path)})
@@ -124,7 +124,10 @@ class BotHandler:
             #debug
             if(self.debug):
                 self.show_screenshot()
-            #self.actions()
+
+            # Put the actions (mouse/keyboard) inside function __actions__ in this class
+            #self.__actions__()
+
             self.flow_handle(0)
         cv2.destroyAllWindows()
     def pause(self):
@@ -219,8 +222,7 @@ class BotHandler:
     def show_screenshot(self):
         cv2.imshow("Screenshot", self.screenshot)
 
-    def actions(self):
-        # bot actions
+    def __actions__(self): # PUT BOT ACTIONS HERE
         points = self.area_img.find(self.screenshot, 0.8, self.debug, cv2.COLOR_BGR2GRAY)
         if not (len(points)):
             self.keyboard_press('v', 0)
