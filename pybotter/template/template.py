@@ -1,6 +1,6 @@
 # This is sample template that have the required function calls (**) to run the bot
 
-from pybot import PyBot
+from pybotter import PyBot
 
 def main():
 
