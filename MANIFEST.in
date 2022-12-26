@@ -1,6 +1,4 @@
 include *.in
-include LICENSE
-include README.md
-recursive-include pybot/template *.py
-recursive-include pybot *.py
-recursive-include sound *.mp3
+recursive-include pybotter/template *.py
+recursive-include pybotter *.py
+recursive-include pybotter/sound *.mp3
