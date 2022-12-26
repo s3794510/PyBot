@@ -1,7 +1,7 @@
 import time
 import unittest
 import sys
-from pybot import PyBot
+from pybotter import PyBot
 from tkinter import Tk, Button, Frame
 from threading import Thread
 import win32gui
