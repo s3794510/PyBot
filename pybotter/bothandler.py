@@ -68,7 +68,7 @@ class BotHandler:
         self.screenshot = None
         self.debug = debug
         self.images = {str:Vision}
-        self.soundpath = os.path.join(os.path.dirname(__file__),os.pardir,'sound')
+        self.soundpath = os.path.join(os.path.dirname(__file__),'sound')
     
     def add_image(self, name, path):
         self.images.update({name:Vision(path)})
