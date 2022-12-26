@@ -35,7 +35,6 @@ class PyBot:
 
         # After done running
         print('Program is closed.')
-        i = input("Press any key to end program.\n")
         return 0
 
 
