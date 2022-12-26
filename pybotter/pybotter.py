@@ -1,7 +1,5 @@
-from cv2 import resize, threshold
 from .bothandler import BotHandler
 from .windowhandler import WindowHandler
-import win32gui
 
 class PyBot:
     def __init__(self, window_name, debug = None):
