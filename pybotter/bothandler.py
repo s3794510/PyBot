@@ -4,6 +4,7 @@ from time import time, sleep
 import keyboard, cv2, os
 from .vision import Vision
 from .windowhandler import WindowHandler
+from .soundhandler import SoundHandler
 
 class BotHandler:
     # http://www.kbdedit.com/manual/low_level_vk_list.html
@@ -50,8 +51,9 @@ class BotHandler:
     }
    
     
-    def __init__(self, window_name, debug = None) -> None:
+    def __init__(self, window_name, debug = None, mute = None) -> None:
         self.window_name = window_name
+        self.soundpath = os.path.join(os.path.dirname(__file__),'sound')
         self.hwnd = None
         if self.window_name is None:
             self.hwnd = win32gui.GetDesktopWindow()
@@ -61,6 +63,7 @@ class BotHandler:
                 raise Exception('Window not found: {}'.format(self.window_name))
         self.s = sched.scheduler(time, sleep)
         self.window_handler = WindowHandler(self.window_name)
+        self.soundhandler = SoundHandler(self.soundpath)
         self.is_running = True
         self.is_pause = False
         self.loop_time = time()
@@ -68,7 +71,7 @@ class BotHandler:
         self.screenshot = None
         self.debug = debug
         self.images = {str:Vision}
-        self.soundpath = os.path.join(os.path.dirname(__file__),'sound')
+
     
     def add_image(self, name, path):
         self.images.update({name:Vision(path)})
@@ -103,7 +106,7 @@ class BotHandler:
 
 
     def init(self, debug = None):
-        self.sound_start()
+        self.soundhandler.sound_start()
         # init threads
         self.pause_handle_thread()
         self.exit_handle_thread()
@@ -131,87 +134,23 @@ class BotHandler:
             self.flow_handle(0)
         cv2.destroyAllWindows()
     
-    def _playsoundWin(self, sound, block = True):
-        """
-        This function is a replica from playsound 1.2.2, kudos to TaylorSMarks.
-        See their GitHub on https://github.com/TaylorSMarks/
-        """
-        '''
-        Utilizes windll.winmm. Tested and known to work with MP3 and WAVE on
-        Windows 7 with Python 2.7. Probably works with more file formats.
-        Probably works on Windows XP thru Windows 10. Probably works with all
-        versions of Python.
-
-        Inspired by (but not copied from) Michael Gundlach <gundlach@gmail.com>'s mp3play:
-        https://github.com/michaelgundlach/mp3play
-
-        I never would have tried using windll.winmm without seeing his code.
-        '''
-        from ctypes import c_buffer, windll
-        from random import random
-        from time   import sleep
-        from sys    import getfilesystemencoding
-
-        def winCommand(*command):
-            buf = c_buffer(255)
-            command = ' '.join(command).encode(getfilesystemencoding())
-            errorCode = int(windll.winmm.mciSendStringA(command, buf, 254, 0))
-            if errorCode:
-                errorBuffer = c_buffer(255)
-                windll.winmm.mciGetErrorStringA(errorCode, errorBuffer, 254)
-                exceptionMessage = ('\n    Error ' + str(errorCode) + ' for command:'
-                                    '\n        ' + command.decode() +
-                                    '\n    ' + errorBuffer.value.decode())
-                raise Exception(exceptionMessage)
-            return buf.value
-
-        alias = 'playsound_' + str(random())
-        winCommand('open "' + sound + '" alias', alias)
-        winCommand('set', alias, 'time format milliseconds')
-        durationInMS = winCommand('status', alias, 'length')
-        winCommand('play', alias, 'from 0 to', durationInMS.decode())
-
-        if block:
-            sleep(float(durationInMS) / 1000.0)
-        
+ 
     def pause(self):
         self.is_pause = True
         print("Paused.\n")
-        self.sound_pause()
+        self.soundhandler.sound_pause()
 
     def unpause(self):
         self.is_pause = False
         print("Continued.\n")
-        self.sound_unpause()
+        self.soundhandler.sound_unpause()
         pass
     def exit(self):
         self.is_running = False
-        self.sound_exit()
+        self.soundhandler.sound_exit()
         pass
 
-    def sound_pause(self):
-        self.play(self.soundpath +'/pause.mp3')
 
-    def sound_unpause(self):
-        self.play(self.soundpath +'/unpause.mp3')
-
-    def sound_start(self):
-        self.play(self.soundpath +'/start.mp3')
-
-    def sound_exit(self):
-        self.play(self.soundpath +'/exit.mp3')
-
-    def play(self, sound_file):
-            thread = threading.Thread(target=self.launch_mp3, args=(sound_file,))
-            thread.start()
-
-    def launch_mp3(self, sound_file):
-            #mixer.init()
-            #mixer.music.load(sound_file)
-            #mixer.music.play()
-            #while mixer.music.get_busy():  # wait for music to finish playing
-            #    sleep(1)
-            self._playsoundWin(sound_file)
     
     def pause_handle_thread(self):
         thread = threading.Thread(target=self.pause_handle, args=())
