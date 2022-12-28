@@ -86,7 +86,7 @@ class Vision:
                 # Save the points
                 points.append((center_x, center_y))
                 if debug_mode:
-                    if 'rectangles' in debug_mode:
+                    if 'rectangles' in debug_mode or 'debug' in debug_mode:
                         # Determine the box position
                         top_left = (x, y)
                         bottom_right = (x + w, y + h)
