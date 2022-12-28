@@ -75,15 +75,17 @@ class BotHandler:
     
     def add_image(self, name, path):
         self.images.update({name:Vision(path)})
+        return 0
 
     def find_image(self, name, threshold):
-        self.images.get(name).find(self.screenshot, threshold)
+        return self.images.get(name).find(self.screenshot, threshold,debug_mode=self.debug)
 
     def keyboard_press(self, key, duration):
         keycode = self.keymap.get(key.upper())
         win32api.PostMessage(self.hwnd, win32con.WM_KEYDOWN, keycode, 0)
         sleep(duration + 0.1)
         win32api.PostMessage(self.hwnd, win32con.WM_KEYUP, keycode, 0)
+        return 0
 
     def leftclick(self, x, y, duration):
         lParam = win32api.MAKELONG(x, y)
@@ -106,6 +108,7 @@ class BotHandler:
 
 
     def init(self, debug = None):
+        self.debug = debug
         self.soundhandler.sound_start()
         # init threads
         self.pause_handle_thread()
@@ -117,24 +120,12 @@ class BotHandler:
         #self.teleport_img = Vision('teleport.jpg')
 
     def resize(self, x, y):
-        self.window_handler.window_resize(x, y)
+        return self.window_handler.window_resize(x, y)
 
-    def run(self, debug = None):
-        self.init()
-        while(self.is_running):
-            # get an updated image of the game
-            self.update_screenshot()
-            #debug
-            if(self.debug):
-                self.show_screenshot()
-
-            # Put the actions (mouse/keyboard) inside function __actions__ in this class
-            #self.__actions__()
-
-            self.flow_handle(0)
+    def destroyAllWindows(self):
         cv2.destroyAllWindows()
+        return 0
     
- 
     def pause(self):
         self.is_pause = True
         print("Paused.\n")
