@@ -42,19 +42,8 @@ def check_window_created(window_title):
             raise Exception("Mock window was not properly created.") 
 
 
-class TestPybotter(unittest.TestCase):
-    def run_mock_window_in_thread(self, window_name, root):
-        thread_=Thread(target=self.create_window,args=(self,window_name,root,))
-        thread_.daemon = True
-        thread_.start()
-        return thread_
 
 
-    def create_window(self, window_name, root):
-        singleButton = Button(root, text="Sample", padx=500, pady=100)
-        singleButton.pack()
-        root.title(window_name)
-        root.mainloop()
 
     
     @classmethod
