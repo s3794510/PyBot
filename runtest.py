@@ -58,13 +58,6 @@ def check_window_created(window_title):
     def tearDownClass(cls) -> None:
         pass
 
-    def test_list_windows(self):
-        with open('trash', 'w', encoding="utf-8") as w:
-            save_stdout = sys.stdout
-            sys.stdout = w
-            self.assertEqual(PyBot.list_windows(), 0)
-            sys.stdout = save_stdout
-
     def test_targetwindow(self):
         self.assertEqual(self.pybotter.window_name, self.window_title)
         
