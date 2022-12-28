@@ -128,3 +128,4 @@ class WindowHandler:
             raise Exception('Window not found: {}'.format(self.window_name))
         win32gui.MoveWindow(hwnd, 0, 0, w, h, True)
         self.__init__(self.window_name)
+        return 0
