@@ -68,8 +68,8 @@ class TestPybotter(unittest.TestCase):
         pass
 
     def test_targetwindow(self):
-        self.assertEqual(self.pybotter.window_name, self.window_title)
-        
+        with disableConsolePrint():
+            self.assertEqual(self.pybotter.window_name, self.window_title)
 
 if __name__ == '__main__':
     unittest.main()
