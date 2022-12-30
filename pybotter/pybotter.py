@@ -48,7 +48,7 @@ class PyBot:
         self.debug = debug
         self.window_name = window_name
         self.bothandler = BotHandler(window_name, self.debug)
-        print("Object PyBot created")
+        print("Object PyBot created, Window name: ", self.window_name)
 
     def list_windows():
         return WindowHandler.list_window_titles()
@@ -56,8 +56,9 @@ class PyBot:
     def add_image(self, name, path):
         return self.bothandler.add_image(name, path)
 
-    def find_image(self, name, threshold = 0.5):
-        return self.bothandler.find_image(name, threshold)
+    def find_image(self, name, threshold = 0.5, convert=None):
+        "convert method = COLOR_BGR2GRAY"
+        return self.bothandler.find_image(name, threshold,convert=convert)
 
     def show_window(self):
         self.bothandler.show_screenshot()
