@@ -2,6 +2,48 @@ from .bothandler import BotHandler
 from .windowhandler import WindowHandler
 
 class PyBot:
+    
+    def mainloop(self, func):
+        def run():
+            # Start program text
+            print("""Hold shift + ESC to stop
+            Hold shift + P to pause/unpause.
+            Hold shift + F to show FPS
+            Program is running.
+            """)
+
+            # Run the bot
+            return_code = self.runmainloop(func)
+
+            # After done running
+            print('Program is closed.')
+            return return_code
+        return run
+
+    def runmainloop(self, actions):
+        while(self.bothandler.is_running):
+    
+            # get an updated image of the game
+            self.bothandler.update_screenshot()
+
+            # debug: pop up a window that show the screen shot
+            #if(self.debug):
+                #self.bothandler.show_screenshot()
+
+            # Put the actions (mouse/keyboard) inside function actions in this class
+            actions()
+
+            self.bothandler.flow_handle()
+        self.bothandler.destroyAllWindows()
+        return 0
+
+    def variables(self, func):
+        def run(*args, **kwargs):
+            self.bothandler.init(self.debug)
+            return_code = func(*args, **kwargs)
+            return return_code
+        return run
+
     def __init__(self, window_name, debug = None):
         self.debug = debug
         self.window_name = window_name
@@ -21,41 +63,6 @@ class PyBot:
         self.bothandler.show_screenshot()
 
 
-    def run(self):
-
-        # Start program text
-        print("""Hold shift + ESC to stop
-        Hold shift + P to pause/unpause.
-        Hold shift + F to show FPS
-        Program is running.
-        """)
-
-        # Run the bot
-        self.mainloop()
-
-        # After done running
-        print('Program is closed.')
-        return 0
-
-    def mainloop(self):
-        self.bothandler.init(self.debug)
-        self.add_image("Sample button", "SampleButton.png")
-        while(self.bothandler.is_running):
-    
-            # get an updated image of the game
-            self.bothandler.update_screenshot()
-
-            # debug: pop up a window that show the screen shot
-            #if(self.debug):
-                #self.bothandler.show_screenshot()
-
-            # Put the actions (mouse/keyboard) inside function actions in this class
-            self.actions()
-
-            self.bothandler.flow_handle()
-        self.bothandler.destroyAllWindows()
-
-
     def left_click(self, x, y, duration):
         self.bothandler.leftclick(x, y, duration)
 
@@ -65,8 +72,3 @@ class PyBot:
     def resize(self, x, y):
         return self.bothandler.resize(x, y)
         
-
-    def actions(self):
-        # Put the actions here
-        self.find_image("Sample button",0.5)
-        pass
