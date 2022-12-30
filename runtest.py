@@ -44,6 +44,15 @@ def check_window_created(window_title):
 
 
 
+class disableConsolePrint():
+    def __enter__(self):
+        sys.stdout = open(os.devnull, 'w',encoding="utf-8")
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        sys.stdout.close()
+        sys.stdout = sys.__stdout__
+        
+class TestPybotter(unittest.TestCase):
 
     
     @classmethod
