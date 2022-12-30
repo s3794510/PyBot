@@ -72,13 +72,25 @@ class BotHandler:
         self.debug = debug
         self.images = {str:Vision}
 
-    
-    def add_image(self, name, path):
-        self.images.update({name:Vision(path)})
-        return 0
+    @staticmethod
+    def check_file_exist(path):
+        if not os.path.isfile(path):
+            raise Exception("Path or file not found")
+        return True
 
-    def find_image(self, name, threshold):
-        return self.images.get(name).find(self.screenshot, threshold,debug_mode=self.debug)
+    def add_image(self, name, path):
+        if self.check_file_exist(path):
+            self.images.update({name:Vision(path)})
+            return 0
+        raise Exception("Unexpected Error")
+
+    def find_image(self, name, threshold, convert = None):
+        "convert method = COLOR_BGR2GRAY"
+        haystack = self.images.get(name)
+        typehs = type(haystack)
+        if typehs is not Vision:
+            raise(Exception("Haystack image not found, actual Type:",typehs))
+        return haystack.find(self.screenshot, threshold,convert=convert ,debug_mode=self.debug)
 
     def keyboard_press(self, key, duration):
         keycode = self.keymap.get(key.upper())
@@ -136,11 +148,11 @@ class BotHandler:
         print("Continued.\n")
         self.soundhandler.sound_unpause()
         pass
+
     def exit(self):
         self.is_running = False
         self.soundhandler.sound_exit()
         pass
-
 
     
     def pause_handle_thread(self):
