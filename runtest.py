@@ -55,7 +55,6 @@ class disableConsolePrint():
         
 class TestPybotter(unittest.TestCase):
 
-    
     @classmethod
     def setUpClass(cls) -> None:
         cls.window_title ="Test window pybotter fro unit test"
@@ -75,6 +74,9 @@ class TestPybotter(unittest.TestCase):
     def test_add_image_fail(self):
         with disableConsolePrint():
             self.assertRaises(Exception, self.pybotter.add_image,"SampleButton", "SampleButon.png")
+
+    def test_add_image(self):
+        self.assertEqual(self.pybotter.add_image("SampleButton", "SampleButton.png"),0)
 if __name__ == '__main__':
     unittest.main()
 
