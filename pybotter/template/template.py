@@ -1,4 +1,4 @@
-# This is sample template that have the required function calls (**) to run the bot
+# This is sample template that have the required function calls (**) to properly invoke and run the bot
 
 from pybotter import PyBot
 
@@ -20,17 +20,28 @@ def main():
     # (**) Initialise the bot
     bot = PyBot(window_name, debug)
 
+    # (**) Add needle images first
+    @bot.variables
+    def add_variables():
+        #bot.add_image("IMAGE_NAME", "IMAGE_PATH")
+        pass
+    
+    
+    # (**) Add bot actions that run during the main loop
+    @bot.mainloop
+    def bot_run():
+        pass
+
+
     # Resize the target window
     #bot.resize(640,380)
 
-    # (**) To modify the bot actions, modify the function __actions__ in BotHandler class
-
-    # (**) Run the bot
-    bot.run()
+    # (**) Initiate adding variables, MUST RUN THIS BEFORE THE MAIN LOOP
+    add_variables()
     
-
-
-
+    # (**) Run the bot
+    bot_run()
+    
 # Driver code
 if __name__ == '__main__':
     main()
