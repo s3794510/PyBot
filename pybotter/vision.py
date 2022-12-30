@@ -29,8 +29,8 @@ class Vision:
     
 
     def find(self, haystack_img, threshold=0.5, convert = None,  debug_mode=None):
+        "convert method = COLOR_BGR2GRAY"
         haystack = None
-        # convert method = COLOR_BGR2GRAY
         if (convert != None):
             haystack = cv2.cvtColor(haystack_img, convert)
             needle = cv2.cvtColor(self.needle_img, convert)
