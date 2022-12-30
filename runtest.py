@@ -71,6 +71,9 @@ class TestPybotter(unittest.TestCase):
         with disableConsolePrint():
             self.assertEqual(self.pybotter.window_name, self.window_title)
 
+    def test_add_image_fail(self):
+        with disableConsolePrint():
+            self.assertRaises(Exception, self.pybotter.add_image,"SampleButton", "SampleButon.png")
 if __name__ == '__main__':
     unittest.main()
 
