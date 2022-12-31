@@ -84,14 +84,14 @@ class TestPybotter(unittest.TestCase):
         self.assertRaises(Exception, self.pybotter.find_image,(self.needle_name, 0.5))
 
     def test_find_image(self):
-        self.pybotter.bothandler.window_handler.window_resize(640,480)
+        self.pybotter.resize(640,480)
         start_time = time.time()
-        while start_time + 3 > time.time():
-            try:
-                x,y = self.pybotter.find_image(self.needle_name, 0.5)
-                return
-            except TypeError:
-                print("An exception occurred")
+        while start_time + 1 > time.time():
+            self.pybotter.bothandler.update_screenshot()
+            cor = self.pybotter.find_image(self.needle_name, 0.5)
+            if cor.__len__()>0:
+                break
+        self.assertNotEqual(cor.__len__(),0)
 
 
 if __name__ == '__main__':
