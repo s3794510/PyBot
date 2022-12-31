@@ -98,10 +98,9 @@ class Vision:
                         cv2.drawMarker(haystack, (center_x, center_y), 
                                     color=marker_color, markerType=marker_type, 
                                     markerSize=20, thickness=2)
-        if debug_mode:
-            cv2.imshow('Matches', haystack)
-            if "save" in debug_mode:
-                cv2.imwrite(f'debug/vision.find_screenshot{self.needle_img_path}', haystack)
+                    cv2.imshow('Matches', haystack)
+                    if "save" in debug_mode:
+                        cv2.imwrite(f'debug/vision.find_screenshot{self.needle_img_path}', haystack)
         #cv2.waitKey()
         for i in range(len(points)):
             points[i] = (int(points[i][0] / 1.2234), int(points[i][1] / 1.2234))
