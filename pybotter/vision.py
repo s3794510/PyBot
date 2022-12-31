@@ -28,12 +28,12 @@ class Vision:
         pass
     
 
-    def find(self, haystack_img, threshold=0.5, convert = None,  debug_mode=None):
+    def find(self, haystack_img, threshold=0.5, convert_mode = None,  debug_mode=None):
         "convert method = COLOR_BGR2GRAY"
         haystack = None
-        if (convert != None):
-            haystack = cv2.cvtColor(haystack_img, convert)
-            needle = cv2.cvtColor(self.needle_img, convert)
+        if (convert_mode != None):
+            haystack = cv2.cvtColor(haystack_img, convert_mode)
+            needle = cv2.cvtColor(self.needle_img, convert_mode)
         else:
             haystack = haystack_img
             needle = self.needle_img
@@ -86,7 +86,7 @@ class Vision:
                 # Save the points
                 points.append((center_x, center_y))
                 if debug_mode:
-                    if 'rectangles' in debug_mode or 'debug' in debug_mode:
+                    if ('rectangles' in debug_mode) or ('debug' in debug_mode):
                         # Determine the box position
                         top_left = (x, y)
                         bottom_right = (x + w, y + h)
