@@ -5,7 +5,6 @@ from pybotter import PyBot
 from tkinter import Tk, Button, Frame
 from threading import Thread
 import win32gui
-from contextlib import contextmanager
 
 class Application(Frame):              
     def __init__(self, master=None):
@@ -54,7 +53,7 @@ class TestPybotter(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        cls.window_title ="Test window pybotter fro unit test"
+        cls.window_title ="Test window pybotter for unit test"
         cls.thd = start_tkinter_thread(cls.window_title)
         check_window_created(cls.window_title)
         cls.pybotter = PyBot(cls.window_title)
