@@ -53,7 +53,8 @@ class WindowHandler:
 
 
         signedIntsArray = dataBitMap.GetBitmapBits(True)
-        img = np.fromstring(signedIntsArray, dtype='uint8')
+        #img = np.fromstring(signedIntsArray, dtype='uint8')
+        img = np.frombuffer(signedIntsArray, dtype='uint8')
         img.shape = (self.h, self.w, 4)
         # Debug
         if (debug):
@@ -119,10 +120,3 @@ class WindowHandler:
                 raise Exception('Window not found: {}'.format(window_name))
         return hwnd
     
-    def window_resize(self, w, h) -> None:
-        hwnd = win32gui.FindWindow(None, self.window_name)
-        if not hwnd:
-            raise Exception('Window not found: {}'.format(self.window_name))
-        win32gui.MoveWindow(hwnd, 0, 0, w, h, True)
-        self.__init__(self.window_name)
-        return 0
