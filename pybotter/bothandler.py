@@ -86,11 +86,11 @@ class BotHandler:
 
     def find_image(self, name, threshold, convert = None):
         "convert method = COLOR_BGR2GRAY"
-        haystack = self.images.get(name)
-        typehs = type(haystack)
-        if typehs is not Vision:
-            raise(Exception("Haystack image not found, actual Type:",typehs))
-        return haystack.find(self.screenshot, threshold,convert=convert ,debug_mode=self.debug)
+        needle = self.images.get(name)
+        typeneedle = type(needle)
+        if typeneedle is not Vision:
+            raise(Exception("Needle image not found, actual Type:",typeneedle))
+        return needle.find(self.screenshot, threshold,convert=convert ,debug_mode=self.debug)
 
     def keyboard_press(self, key, duration):
         keycode = self.keymap.get(key.upper())
