@@ -78,6 +78,12 @@ class BotHandler:
             raise Exception("Path or file not found")
         return True
 
+    def check_needle_fit_haystack(self, needle_name):
+        needle = self.images.get(needle_name)
+        if (needle.needle_h > self.window_handler.h) or (needle.needle_w > self.window_handler.w) :
+            raise Exception("Needle image is bigger than the target window")
+        return 0
+
     def add_image(self, name, path):
         if self.images.get(name) != None:
             raise Exception("Needle image name already existed")
@@ -95,7 +101,8 @@ class BotHandler:
         typeneedle = type(needle)
         if typeneedle is not Vision:
             raise(Exception("Needle image not found, actual Type:",typeneedle))
-        return needle.find(self.screenshot, threshold,convert=convert ,debug_mode=self.debug)
+        if self.check_needle_fit_haystack(name): 
+            return needle.find(self.screenshot, threshold,convert=convert ,debug_mode=self.debug)
 
     def keyboard_press(self, key, duration):
         keycode = self.keymap.get(key.upper())
