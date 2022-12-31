@@ -81,8 +81,9 @@ class BotHandler:
     def check_needle_fit_haystack(self, needle_name):
         needle = self.images.get(needle_name)
         if (needle.needle_h > self.window_handler.h) or (needle.needle_w > self.window_handler.w) :
-            raise Exception("Needle image is bigger than the target window")
-        return 0
+            msg = """Needle image is bigger than the target window. needle_w = """ + needle.needle_w.__str__() + " | window_w = " + self.window_handler.w.__str__() + " | needle_h = " + needle.needle_h.__str__() + " | window_h = " + self.window_handler.h.__str__()
+            raise Exception(msg)
+        return True
 
     def add_image(self, name, path):
         if self.images.get(name) != None:
