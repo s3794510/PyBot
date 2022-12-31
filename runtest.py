@@ -42,9 +42,6 @@ def check_window_created(window_title):
         if time.time() > start_time + 5:
             raise Exception("Mock window was not properly created.") 
 
-
-
-
 class disableConsolePrint():
     def __enter__(self):
         sys.stdout = open(os.devnull, 'w',encoding="utf-8")
@@ -77,6 +74,12 @@ class TestPybotter(unittest.TestCase):
 
     def test_add_image(self):
         self.assertEqual(self.pybotter.add_image("SampleButton", "SampleButton.png"),0)
+
+    def test_leftmouse_click_on_image(self):
+        x, y = self.pybotter.find_image("SampleButton", 0.5)
+        self.assertEqual(0, self.pybotter.left_click,x,y,0.1)
+
+
 if __name__ == '__main__':
     unittest.main()
 
