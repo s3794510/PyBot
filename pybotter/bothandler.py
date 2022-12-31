@@ -79,9 +79,14 @@ class BotHandler:
         return True
 
     def add_image(self, name, path):
+        if self.images.get(name) != None:
+            raise Exception("Needle image name already existed")
         if self.check_file_exist(path):
             self.images.update({name:Vision(path)})
-            return 0
+            if self.images.get(name) == None:
+                raise Exception("Needle image returns a NULL value")
+            return self.images.get(name)
+
         raise Exception("Unexpected Error")
 
     def find_image(self, name, threshold, convert = None):
