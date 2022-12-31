@@ -56,7 +56,8 @@ class TestPybotter(unittest.TestCase):
         cls.window_title ="Test window pybotter for unit test"
         cls.thd = start_tkinter_thread(cls.window_title)
         check_window_created(cls.window_title)
-        cls.pybotter = PyBot(cls.window_title)
+        with disableConsolePrint():
+            cls.pybotter = PyBot(cls.window_title)
         pass
 
     @classmethod
