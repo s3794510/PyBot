@@ -1,12 +1,13 @@
 import time
 import unittest
-import sys, os
+import sys, os, cv2
 from pybotter import PyBot
+from pybotter.vision import Vision
 from tkinter import Tk, Button, Frame
 from threading import Thread
 import win32gui
 
-class Application(Frame):              
+class MockWindow(Frame):              
     def __init__(self, master=None):
         Frame.__init__(self, master)   
         self.grid()                       
@@ -20,7 +21,7 @@ class Application(Frame):
         self.printButton.grid(row=1,column=1) 
 
 def runtk(window_title):  # runs in background thread
-    app = Application()                        
+    app = MockWindow()                        
     app.master.title(window_title)     
     app.mainloop()
 
@@ -56,6 +57,8 @@ class TestPybotter(unittest.TestCase):
         cls.window_title ="Test window pybotter for unit test"
         cls.thd = start_tkinter_thread(cls.window_title)
         check_window_created(cls.window_title)
+        cls.needle_name = "SampleButton"
+        cls.needle_path = "SampleButton.png"
         with disableConsolePrint():
             cls.pybotter = PyBot(cls.window_title)
         pass
@@ -70,14 +73,25 @@ class TestPybotter(unittest.TestCase):
 
     def test_add_image_fail(self):
         with disableConsolePrint():
-            self.assertRaises(Exception, self.pybotter.add_image,"SampleButton", "SampleButon.png")
+            self.assertRaises(Exception, self.pybotter.add_image,self.needle_name, "Wrong path")
 
     def test_add_image(self):
-        self.assertEqual(self.pybotter.add_image("SampleButton", "SampleButton.png"),0)
+        self.assertIsInstance(self.pybotter.add_image(self.needle_name, self.needle_path), Vision)
+        self.assertRaises(Exception,self.pybotter.add_image,(self.needle_name, self.needle_path))
+        self.assertIsInstance(self.pybotter.bothandler.images.get(self.needle_name), Vision)
 
-    def test_leftmouse_click_on_image(self):
-        x, y = self.pybotter.find_image("SampleButton", 0.5)
-        self.assertEqual(0, self.pybotter.left_click,x,y,0.1)
+    def test_needle_bigger_than_image_when_find(self):
+        self.assertRaises(Exception, self.pybotter.find_image,(self.needle_name, 0.5))
+
+    def test_find_image(self):
+        self.pybotter.bothandler.window_handler.window_resize(640,480)
+        start_time = time.time()
+        while start_time + 3 > time.time():
+            try:
+                x,y = self.pybotter.find_image(self.needle_name, 0.5)
+                return
+            except TypeError:
+                print("An exception occurred")
 
 
 if __name__ == '__main__':
