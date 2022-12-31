@@ -39,7 +39,7 @@ class PyBot:
 
     def variables(self, func):
         def run(*args, **kwargs):
-            self.bothandler.init(self.debug)
+            self.bothandler.init()
             return_code = func(*args, **kwargs)
             return return_code
         return run
