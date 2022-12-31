@@ -100,15 +100,12 @@ class WindowHandler:
     # the __init__ constructor.
     def get_screen_position(self, pos):
         return (pos[0] + self.offset_x, pos[1] + self.offset_y)
-    @staticmethod
-    def window_resize(window_name, w, h) -> None:
-        if window_name is None:
-            hwnd = win32gui.GetDesktopWindow()
-        else:
-            hwnd = win32gui.FindWindow(None, window_name)
-            if not hwnd:
-                raise Exception('Window not found: {}'.format(window_name))
-        win32gui.MoveWindow(hwnd, 0, 0, w, h, True)
+
+    def window_resize(self, w, h) -> None:
+        win32gui.MoveWindow(self.hwnd, 0, 0, w, h, True)
+        self.w = w
+        self.h = h
+        return 0
     @staticmethod
     def get_windowsize(self) -> Tuple:
         return win32gui.GetWindowRect(self.hwnd)
