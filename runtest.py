@@ -7,11 +7,11 @@ from tkinter import Tk, Button, Frame
 from threading import Thread
 import win32gui
 
-class MockWindow(Frame):              
-    def __init__(self, master=None):
-        Frame.__init__(self, master)   
-        self.grid()                       
-        self.createWidgets()
+class MockWindow(Tk):              
+    def __init__(self):
+        Tk.__init__(self)   
+        singleButton = Button(self, text="Sample", padx=200, pady=50)
+        singleButton.pack()
 
     def createWidgets(self):
         self.quitButton = Button(self, text='Quit',
@@ -22,7 +22,7 @@ class MockWindow(Frame):
 
 def runtk(window_title):  # runs in background thread
     app = MockWindow()                        
-    app.master.title(window_title)     
+    app.title(window_title)     
     app.mainloop()
 
 def start_tkinter_thread(window_title):
