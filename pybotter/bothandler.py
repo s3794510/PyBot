@@ -103,7 +103,8 @@ class BotHandler:
         if typeneedle is not Vision:
             raise(Exception("Needle image not found, actual Type:",typeneedle))
         if self.check_needle_fit_haystack(name): 
-            return needle.find(self.screenshot, threshold,convert=convert ,debug_mode=self.debug)
+            return needle.find(self.screenshot, threshold, convert_mode= convert,debug_mode=self.debug)
+        raise Exception("Unexpected Error")
 
     def keyboard_press(self, key, duration):
         keycode = self.keymap.get(key.upper())
@@ -132,8 +133,7 @@ class BotHandler:
             self.loop_time = time()
 
 
-    def init(self, debug = None):
-        self.debug = debug
+    def init(self):
         self.soundhandler.sound_start()
         # init threads
         self.pause_handle_thread()
