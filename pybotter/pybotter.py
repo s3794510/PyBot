@@ -27,8 +27,8 @@ class PyBot:
             self.bothandler.update_screenshot()
 
             # debug: pop up a window that show the screen shot
-            #if(self.debug):
-                #self.bothandler.show_screenshot()
+            if(self.debug):
+                self.bothandler.show_screenshot()
 
             # Put the actions (mouse/keyboard) inside function actions in this class
             actions()
