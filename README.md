@@ -14,18 +14,45 @@ pip install pybotter
 A template provided in the package for simplification.
 
 ```python
-from pybot import PyBot
+from pybotter import PyBot
 
-# Define window name
+# Change path of the system
+#os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+# (**) Type the exact name of the window
 window_name = "Title of the target window"
 
-# Create PyBot object:
-bot = PyBot(window_name)
+# Show list of windows
+#PyBot.list_windows()
 
-# (**) To modify the bot actions, modify the function __actions__ in BotHandler class
+# Debug mode: show screen shot of the target window
+debug = None
+#debug = 'debug' 
+
+# (**) Initialise the bot
+bot = PyBot(window_name, debug)
+
+# (**) Add needle images first
+@bot.variables
+def add_variables():
+    #bot.add_image("IMAGE_NAME", "IMAGE_PATH")
+    pass
+
+
+# (**) Add bot actions that run during the main loop
+@bot.mainloop
+def bot_run():
+    pass
+
+
+# Resize the target window
+#bot.resize(640,380)
+
+# (**) Initiate adding variables, MUST RUN THIS BEFORE THE MAIN LOOP
+add_variables()
 
 # (**) Run the bot
-bot.run()
+bot_run()
 ```
 
 Sound effects obtained from https://www.zapsplat.com
