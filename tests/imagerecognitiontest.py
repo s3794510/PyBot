@@ -63,9 +63,11 @@ class TestPybotter(unittest.TestCase):
         check_window_created(cls.window_title)
         cls.needle_name = "SampleButton"
         cls.needle_path = image_test_path
-        cls.interval = 0.2
+        cls.interval = 0.1
         cls.step = 0.01
         cls.start_step = 0.3
+        cls.max_step = 1
+        cls.max_fail_allowed = 10
         with disableConsolePrint():
             cls.pybotter = PyBot(cls.window_title)
         cls.pybotter.add_image(cls.needle_name, cls.needle_path)
@@ -79,13 +81,14 @@ class TestPybotter(unittest.TestCase):
 
     def test_series_image(self):
         current_step = self.start_step
+        fail_streak = 0
         total_fail, total_success = 0,0
-        max_step = None
-        while current_step < 1:
+        highest_step = None
+        while current_step < self.max_step and fail_streak != self.max_fail_allowed:
             current_step += self.step
             start_time = time.time()
-            if current_step > 1:
-                current_step = 1
+            if current_step > self.max_step:
+                current_step = self.max_step
             while (start_time + self.interval > time.time()):
                 self.pybotter.bothandler.update_screenshot()
                 cor = self.pybotter.find_image(self.needle_name,current_step)
@@ -93,17 +96,19 @@ class TestPybotter(unittest.TestCase):
                     msg = "Test successful at step: " + current_step.__str__() + " Test run time: " + (time.time() - start_time).__str__()
                     print(msg)
                     total_success += 1
-                    max_step = current_step
+                    highest_step = current_step
+                    fail_streak = 0
                     break
             if msg == None:
                 msg = "Test fail at step: " + current_step.__str__() + " Test run time: " + (time.time() - start_time).__str__()
                 print (msg)
+                fail_streak += 1
                 total_fail += 1
             msg = None
         print("Total runs: ", total_fail + total_success)
         print("Fails: ", total_fail)
         print("Successes: ", total_success)
-        print("Highest success step: ", max_step)
+        print("Highest success step: ", highest_step)
                         
                     
 
