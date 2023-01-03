@@ -3,7 +3,7 @@ import unittest
 import sys, os, cv2
 from pybotter import PyBot
 from pybotter.vision import Vision
-from tkinter import Tk, Button, Frame
+from tkinter import Tk, Button
 from threading import Thread
 import win32gui
 
