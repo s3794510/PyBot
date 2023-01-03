@@ -7,6 +7,8 @@ from tkinter import Tk, Button
 from threading import Thread
 import win32gui
 
+image_test_path = "./testImages/SampleButton.png"
+
 class MockWindow(Tk):              
     def __init__(self):
         Tk.__init__(self)   
@@ -54,11 +56,13 @@ class TestPybotter(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
+        cls.current_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
         cls.window_title ="Test window pybotter for unit test"
         cls.thd = start_tkinter_thread(cls.window_title)
         check_window_created(cls.window_title)
         cls.needle_name = "SampleButton"
-        cls.needle_path = "SampleButton.png"
+        cls.needle_path = image_test_path
         cls.interval = 0.2
         cls.step = 0.01
         cls.start_step = 0.3
@@ -71,7 +75,7 @@ class TestPybotter(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls) -> None:
-        pass
+        os.chdir(cls.current_dir)
 
     def test_series_image(self):
         current_step = self.start_step

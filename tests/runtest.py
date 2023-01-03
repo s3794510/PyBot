@@ -3,9 +3,11 @@ import unittest
 import sys, os, cv2
 from pybotter import PyBot
 from pybotter.vision import Vision
-from tkinter import Tk, Button, Frame
+from tkinter import Tk, Button
 from threading import Thread
 import win32gui
+
+image_test_path = "./testImages/SampleButton.png"
 
 class MockWindow(Tk):              
     def __init__(self):
@@ -54,17 +56,20 @@ class TestPybotter(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
+        cls.current_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
         cls.window_title ="Test window pybotter for unit test"
         cls.thd = start_tkinter_thread(cls.window_title)
         check_window_created(cls.window_title)
         cls.needle_name = "SampleButton"
-        cls.needle_path = "SampleButton.png"
+        cls.needle_path = image_test_path
         with disableConsolePrint():
             cls.pybotter = PyBot(cls.window_title)
         pass
 
     @classmethod
     def tearDownClass(cls) -> None:
+        os.chdir(cls.current_dir)
         pass
 
     def test_targetwindow(self):
